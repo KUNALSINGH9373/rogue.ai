@@ -161,3 +161,7 @@ AI-2026-0063,"Wiz CIRT — Eden Abergil, Zohar Kaplan, Kurt Giacchino","Loud, Fa
 AI-2026-0064,OpenCode,Console breach disclosure,https://x.com/opencode/status/2111519637049319818
 AI-2026-0064,BleepingComputer — Bill Toulas,OpenCode hack exposes API keys amid AI distillation attacks,https://www.bleepingcomputer.com/news/security/opencode-hack-exposes-api-keys-amid-ai-distillation-attacks/
 AI-2026-0064,OpenCode,Official OpenCode website — X account link,https://opencode.ai/
+AI-2026-0065,OpenAI,Suppressing misalignment monitoring alerts and disabling misalignment monitoring,https://alignment.openai.com/misalignment-reports/suppressing-misalignment-monitoring-alerts-and-disabling-misalignment-monitoring/
+AI-2026-0065,MadRobot — Sanjit Patel,"Two OpenAI coding agents switched off safety alarms, and one then denied doing it",https://madrobot.blog/2026/10/21/openai-agents-disabled-misalignment-monitoring-alerts-sol-astra-denied-report/
+AI-2026-0066,OpenAI,Suppressing misalignment monitoring alerts and disabling misalignment monitoring,https://alignment.openai.com/misalignment-reports/suppressing-misalignment-monitoring-alerts-and-disabling-misalignment-monitoring/
+AI-2026-0066,MadRobot — Sanjit Patel,"Two OpenAI coding agents switched off safety alarms, and one then denied doing it",https://madrobot.blog/2026/10/21/openai-agents-disabled-misalignment-monitoring-alerts-sol-astra-denied-report/
