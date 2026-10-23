@@ -227,3 +227,19 @@ AI-2026-0079,Huntress,ConnectWise credential-abuse investigation,https://www.hun
 AI-2026-0079,Reuters,ConnectWise attack linked to AI tooling,https://www.investing.com/news/stock-market-news/chineselinked-hackers-compromise-connectwise-target-hundreds-in-global-attack-microsoft-says-4964230
 AI-2026-0080,Microsoft,Storm-0940 / ARTEX investigation,https://www.microsoft.com/en-us/security/blog/2026/10/21/storm-0940-uses-artex-agentic-ai-connectwise-supply-chain-compromise/
 AI-2026-0080,Huntress,ConnectWise credential-abuse investigation,https://www.huntress.com/blog/vendor-credential-enables-unauthorized-access
+AI-2026-0081,Meta AI Research,Addressing an issue involving a third-party cyber evaluation of Muse Spark 1.1,https://research.meta.ai/blog/addressing-third-party-testing-misconfiguration-muse-spark-1-1
+AI-2026-0081,Reuters (via Investing.com),Factbox — What we know about the rogue AI-agent security breaches,https://www.investing.com/news/stock-market-news/factboxwhat-we-know-about-the-rogue-aiagent-security-breaches-4843379
+AI-2026-0081,CNN Brasil / Reuters,Modelo de IA da Meta invade sistema de empresa durante testes,https://www.cnnbrasil.com.br/economia/money/inteligencia-artificial/modelo-de-ia-da-meta-invade-sistema-de-empresa-durante-testes/
+AI-2026-0082,UK AI Security Institute,Security Incident INC-2026-07-28-01 — Sample 1,https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a724858f7db25c81487016d_Security%20Incident%20INC-2026-07-28-01.pdf
+AI-2026-0082,Anthropic,An alignment assessment of the UK AISI cybertesting incident,https://www.anthropic.com/research/alignment-assessment-ukaisi
+AI-2026-0082,UK AI Security Institute,Alignment Investigation — Mythos 5 AISI Incident,https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6ad8ac7f2ba7446392919b06_Alignment_Investigation_Mythos_5_AISI_Incident.pdf
+AI-2026-0083,UK AI Security Institute,Security Incident INC-2026-07-28-01 — shared GitHub account,https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a724858f7db25c81487016d_Security%20Incident%20INC-2026-07-28-01.pdf
+AI-2026-0083,Anthropic,An alignment assessment of the UK AISI cybertesting incident — other transcripts,https://www.anthropic.com/research/alignment-assessment-ukaisi
+AI-2026-0084,Anthropic,An alignment assessment of the UK AISI cybertesting incident — fake receipt page,https://www.anthropic.com/research/alignment-assessment-ukaisi
+AI-2026-0085,Anthropic,An alignment assessment of the UK AISI cybertesting incident — public file upload,https://www.anthropic.com/research/alignment-assessment-ukaisi
+AI-2026-0086,Anthropic,An alignment assessment of the UK AISI cybertesting incident — developer login attempts,https://www.anthropic.com/research/alignment-assessment-ukaisi
+AI-2026-0087,UK AI Security Institute,Security Incident INC-2026-07-28-01 — Sample 6,https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a724858f7db25c81487016d_Security%20Incident%20INC-2026-07-28-01.pdf
+AI-2026-0008,UK AI Security Institute,Security Incident INC-2026-07-28-01 — full report and appendices,https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6a724858f7db25c81487016d_Security%20Incident%20INC-2026-07-28-01.pdf
+AI-2026-0008,Anthropic,An alignment assessment of the UK AISI cybertesting incident,https://www.anthropic.com/research/alignment-assessment-ukaisi
+AI-2026-0008,UK AI Security Institute,Investigating alignment failures in AISI's incident,https://www.aisi.gov.uk/blog/investigating-alignment-failures-in-aisis-incident
+AI-2026-0008,UK AI Security Institute,Alignment Investigation — Mythos 5 AISI Incident,https://cdn.prod.website-files.com/663bd486c5e4c81588db7a1d/6ad8ac7f2ba7446392919b06_Alignment_Investigation_Mythos_5_AISI_Incident.pdf
