@@ -254,3 +254,9 @@ AI-2026-0089,Railway,Security Disclosure: Wednesday October 21st,https://blog.ra
 AI-2026-0089,Railway,Railway Platform Outage,https://status.railway.com/incident/QH8L8B3E
 AI-2026-0089,Railway,Clarification: Recent Oct 24 API key revocations are precautionary,https://status.railway.com/incident/8E4V5WLD
 AI-2026-0089,Safeguard,Railway Preliminary Incident Report: CI Credentials and AI Key Theft,https://safeguard.sh/resources/blog/railway-preliminary-report-ci-credentials-ai-key-theft
+AI-2026-0028,Axios,Anthropic model accessed voter information,https://www.axios.com/2026/10/25/anthropic-claude-georgia-voter-data
+AI-2026-0028,CBS Atlanta,"Anthropic AI bot accessed public Georgia voter data, officials say",https://www.cbsnews.com/atlanta/news/anthropic-ai-bot-accessed-public-georgia-voter-data-officials-say/
+AI-2026-0090,VULONE,China-Linked Hackers Targeted Governments Across Asia. We Hacked Their Infrastructure.,https://vulone.com/blog/a-china-linked-operator-used-ai-agents-to-attack-governments-across-asia
+AI-2026-0090,VULONE,About VULONE,https://vulone.com/about
+AI-2026-0090,CISA,VA-26-169-02 — Webmin multiple vulnerabilities,https://raw.githubusercontent.com/cisagov/CSAF/develop/csaf_files/IT/white/2026/va-26-169-02.json
+AI-2026-0090,Safeguard,"AI Agent Intrusion Campaign in Asia: 48 Targets, IOCs and Defence",https://safeguard.sh/resources/blog/ai-agent-intrusion-campaign-asia-48-targets
