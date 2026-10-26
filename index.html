@@ -56,6 +56,7 @@
   .bar button { padding: 10px 18px; border: 1px solid var(--line); border-radius: 999px;
                 background: var(--card); color: var(--fg); cursor: pointer; font: inherit; transition: background .2s; }
   .bar button:hover { background: var(--head); }
+  #unknown-model.active { background: var(--head); box-shadow: 0 0 0 2px var(--accent); }
   .legend { display: flex; gap: 8px; flex-wrap: wrap; }
   .legend button { padding: 5px 14px; border-radius: 999px; font: inherit; font-size: 12px; font-weight: 500;
                    cursor: pointer; transition: transform .15s, box-shadow .2s, opacity .2s; }
@@ -176,6 +177,7 @@
 <div class="bar">
   <input id="q" type="search" placeholder="Search incidents…">
   <button id="reset">Clear filters</button>
+  <button id="unknown-model" aria-pressed="false" title="Show incidents whose model identity is unknown or undisclosed. Known model families with an unknown version remain identified.">Unknown model <span id="unknown-count">(0)</span></button>
   <div class="legend">
     <button class="openai" data-company="OpenAI" title="Show only OpenAI incidents">OpenAI</button>
     <button class="anthropic" data-company="Anthropic" title="Show only Anthropic incidents">Anthropic</button>
@@ -193,7 +195,8 @@
 </div>
 </main>
 
-<script>
+<script type="module">
+import { hasUnknownModel } from "./model-filter.mjs";
 const SHEET = "https://docs.google.com/spreadsheets/d/15tpVhsFph5AHnAuUsHFBY82zPciBDJzpfQzWKZ_cNP0/gviz/tq?tqx=out:csv&gid=";
 const INCIDENTS_GID = "1500637786", SOURCES_GID = "1116836595";
 
@@ -222,6 +225,7 @@ function companyGroup(r) {
 const groupClass = r => companyGroup(r).split(" ")[0].toLowerCase();
 
 let data = [], sortKey = "Disclosed on", sortDir = -1;
+let unknownOnly = false;
 const filters = {};
 
 // ---- Headline numbers + timeline of disclosure dates ----
@@ -334,6 +338,7 @@ window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTi
 function render() {
   const q = document.getElementById("q").value.toLowerCase();
   let rows = data.filter(r => {
+    if (unknownOnly && !hasUnknownModel(r.Model)) return false;
     if (selId && r["Incident ID"] !== selId) return false;
     if (q && !COLS.some(c => (r[c.key] || "").toLowerCase().includes(q))) return false;
     return COLS.every(c => {
@@ -368,7 +373,7 @@ function render() {
           a.title = src["Source title"] || src.URL;
           td.appendChild(a);
         }
-      } else td.textContent = r[c.key] || "";
+      } else td.textContent = r[c.key] || (c.key === "Model" ? "Unknown — not disclosed" : "");
       td.dataset.label = c.label || c.key;
       if (c.long) td.className = "long";
       tr.appendChild(td);
@@ -381,6 +386,10 @@ function render() {
   legend.querySelectorAll("button").forEach(b => b.classList.toggle("active", b.dataset.company === filters.Company));
   const sel = document.querySelector('#filters select[data-key="Company"]');
   if (sel) sel.value = filters.Company || "";
+  const unknownButton = document.getElementById("unknown-model");
+  unknownButton.classList.toggle("active", unknownOnly);
+  unknownButton.setAttribute("aria-pressed", String(unknownOnly));
+  document.getElementById("unknown-count").textContent = `(${data.filter(r => hasUnknownModel(r.Model)).length})`;
   document.querySelectorAll("#heads th").forEach((th, i) => {
     th.querySelector(".arrow").textContent = COLS[i].key === sortKey ? (sortDir > 0 ? " ▲" : " ▼") : "";
   });
@@ -414,6 +423,7 @@ function buildHeader() {
 }
 
 document.getElementById("q").oninput = render;
+document.getElementById("unknown-model").onclick = () => { unknownOnly = !unknownOnly; render(); };
 document.querySelectorAll(".legend button").forEach(b => b.onclick = () => {
   filters.Company = filters.Company === b.dataset.company ? "" : b.dataset.company;
   render();
@@ -423,6 +433,7 @@ document.getElementById("reset").onclick = () => {
   document.querySelectorAll("#filters input, #filters select").forEach(el => el.value = "");
   for (const k in filters) delete filters[k];
   selId = "";
+  unknownOnly = false;
   render();
 };
 
