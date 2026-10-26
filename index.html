@@ -86,8 +86,9 @@
   #tl-svg .dot { cursor: pointer; }
   #tl-svg text { font: 10px Inter, sans-serif; fill: var(--muted); }
   .tl-foot { font-size: 11px; color: var(--muted); padding-top: 2px; }
-  .tip { position: fixed; pointer-events: none; background: #5a564f; color: #fffdf9; font-size: 12px; padding: 5px 10px;
-         border-radius: 8px; white-space: nowrap; transform: translate(-50%, -100%); opacity: 0; transition: opacity .1s; z-index: 10; }
+  .tip { position: fixed; pointer-events: none; background: #5a564f; color: #fffdf9; font-size: 12px; padding: 8px 12px;
+         width: max-content; max-width: min(420px, calc(100% - 24px)); line-height: 1.5;
+         border-radius: 8px; white-space: normal; overflow-wrap: anywhere; opacity: 0; transition: opacity .1s; z-index: 10; }
   .wrap { overflow: auto; max-height: calc(100vh - 170px); background: var(--card); border: 1px solid var(--line);
           border-radius: 18px; box-shadow: 0 6px 24px #b5a99212; }
   table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1300px; }
@@ -173,7 +174,7 @@
   <svg id="tl-svg" role="img" aria-label="Timeline of disclosed incidents up to today"></svg>
   <div class="tl-foot" id="tl-foot"></div>
 </section>
-<div class="tip" id="tip"></div>
+<div class="tip" id="tip" role="tooltip"></div>
 <div class="bar">
   <input id="q" type="search" placeholder="Search incidents…">
   <button id="reset">Clear filters</button>
@@ -259,6 +260,7 @@ function renderStats() {
 }
 
 function renderTimeline() {
+  document.getElementById("tip").style.opacity = 0;
   const svg = document.getElementById("tl-svg"), NS = "http://www.w3.org/2000/svg";
   const W = svg.clientWidth || 800, padL = 8, padR = 44, R = 6, STEP = 15, axisH = 22;
   const end = today();
@@ -304,24 +306,40 @@ function renderTimeline() {
   for (const m of inRange) {
     const grp = groupClass(m.r);
     const cy = base - m.lv * STEP;
-    const g = add("g", { class: "dot", opacity: visibleIds.has(m.r["Incident ID"]) ? 1 : 0.18 });
+    const label = `${m.r["Event title"]} · ${fmtDate(m.d)} · ${companyGroup(m.r)}`;
+    const g = add("g", { class: "dot", tabindex: 0, role: "button", "aria-label": label,
+      opacity: visibleIds.has(m.r["Incident ID"]) ? 1 : 0.18 });
     if (grp === "chinese")   // diamond: shape as well as colour, so this group never relies on colour alone
       add("rect", { x: m.cx - R * 0.8, y: cy - R * 0.8, width: R * 1.6, height: R * 1.6, rx: 1, fill: `var(--m-${grp})`,
                     stroke: "#fffdf9", "stroke-width": 2, transform: `rotate(45 ${m.cx} ${cy})` }, g);
     else add("circle", { cx: m.cx, cy, r: R, fill: `var(--m-${grp})`, stroke: "#fffdf9", "stroke-width": 2 }, g);
     if (m.r["Incident ID"] === selId) add("circle", { cx: m.cx, cy, r: R + 3, fill: "none", stroke: "#5a564f", "stroke-width": 1.5 }, g);
     add("circle", { cx: m.cx, cy, r: R + 5, fill: "transparent" }, g);   // larger hit target
-    g.onmouseenter = () => {
+    const showTip = () => {
       const b = g.getBoundingClientRect();
-      tip.textContent = `${m.r["Event title"]} · ${fmtDate(m.d)} · ${companyGroup(m.r)}`;
-      tip.style.left = b.left + b.width / 2 + "px"; tip.style.top = b.top - 6 + "px"; tip.style.opacity = 1;
+      tip.textContent = label;
+      const margin = 12, gap = 8;
+      const w = document.documentElement.clientWidth, h = document.documentElement.clientHeight;
+      tip.style.maxWidth = Math.min(420, w - margin * 2) + "px";
+      const { width, height } = tip.getBoundingClientRect();
+      const left = Math.max(margin, Math.min(b.left + b.width / 2 - width / 2, w - width - margin));
+      const above = b.top - height - gap;
+      const top = Math.max(margin, Math.min(above >= margin ? above : b.bottom + gap, h - height - margin));
+      tip.style.left = left + "px"; tip.style.top = top + "px"; tip.style.opacity = 1;
     };
+    g.onmouseenter = showTip;
+    g.onfocus = showTip;
     g.onmouseleave = () => { tip.style.opacity = 0; };
+    g.onblur = () => { tip.style.opacity = 0; };
     g.onclick = () => {
       tip.style.opacity = 0;
       selId = selId === m.r["Incident ID"] ? "" : m.r["Incident ID"];
       render();
       if (selId) document.querySelector(".wrap").scrollIntoView({ behavior: "smooth", block: "start" });
+    };
+    g.onkeydown = event => {
+      if (event.key === "Escape") tip.style.opacity = 0;
+      if (event.key === "Enter" || event.key === " ") { event.preventDefault(); g.onclick(); }
     };
   }
   document.querySelectorAll("#ranges button").forEach(b => b.classList.toggle("active", +b.dataset.days === rangeDays));
@@ -334,6 +352,7 @@ function renderTimeline() {
 document.querySelectorAll("#ranges button").forEach(b => b.onclick = () => { rangeDays = +b.dataset.days; renderTimeline(); });
 let resizeT;
 window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => data.length && renderTimeline(), 150); });
+window.addEventListener("scroll", () => { document.getElementById("tip").style.opacity = 0; }, { passive: true, capture: true });
 
 function render() {
   const q = document.getElementById("q").value.toLowerCase();
