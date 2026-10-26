@@ -86,9 +86,17 @@
   #tl-svg .dot { cursor: pointer; }
   #tl-svg text { font: 10px Inter, sans-serif; fill: var(--muted); }
   .tl-foot { font-size: 11px; color: var(--muted); padding-top: 2px; }
-  .tip { position: fixed; pointer-events: none; background: #5a564f; color: #fffdf9; font-size: 12px; padding: 8px 12px;
+  .tip { position: fixed; pointer-events: none; background: #5a564f; color: #fffdf9; font-size: 12px; padding: 14px 16px;
          width: max-content; max-width: min(420px, calc(100% - 24px)); line-height: 1.5;
-         border-radius: 8px; white-space: normal; overflow-wrap: anywhere; opacity: 0; transition: opacity .1s; z-index: 10; }
+         border-radius: 12px; white-space: normal; overflow-wrap: anywhere; opacity: 0; transition: opacity .1s; z-index: 10;
+         box-shadow: 0 8px 28px #302c2633; }
+  .tip-title { font-size: 14px; font-weight: 600; line-height: 1.4; margin-bottom: 10px; }
+  .tip dl { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 6px 12px; margin: 0; }
+  .tip dt { color: #e0d9ce; font-weight: 500; }
+  .tip dd { margin: 0; }
+  .tip-outcome { border-top: 1px solid #ffffff30; margin-top: 10px; padding-top: 10px; }
+  .tip-outcome strong { display: block; color: #e0d9ce; font-size: 11px; margin-bottom: 4px; }
+  .tip-hint { color: #e0d9ce; font-size: 10px; margin-top: 10px; }
   .wrap { overflow: auto; max-height: calc(100vh - 170px); background: var(--card); border: 1px solid var(--line);
           border-radius: 18px; box-shadow: 0 6px 24px #b5a99212; }
   table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1300px; }
@@ -317,7 +325,31 @@ function renderTimeline() {
     add("circle", { cx: m.cx, cy, r: R + 5, fill: "transparent" }, g);   // larger hit target
     const showTip = () => {
       const b = g.getBoundingClientRect();
-      tip.textContent = label;
+      tip.replaceChildren();
+      const section = (tag, className, text, parent = tip) => {
+        const el = document.createElement(tag);
+        if (className) el.className = className;
+        el.textContent = text;
+        parent.appendChild(el);
+        return el;
+      };
+      section("div", "tip-title", m.r["Event title"] || "Untitled incident");
+      const details = section("dl", "", "");
+      for (const [name, value] of [
+        ["Model", m.r.Model || "Unknown — not disclosed"],
+        ["Company", m.r.Company || "Unknown — not disclosed"],
+        ["Occurred", m.r["Occurrence label"] || "Unknown — not established"],
+        ["Disclosed", fmtDate(m.d)],
+        ["Type", m.r.Category || "Not specified"]
+      ]) {
+        section("dt", "", name, details);
+        section("dd", "", value, details);
+      }
+      const outcome = section("div", "tip-outcome", "");
+      section("strong", "", "Harm / outcome", outcome);
+      const outcomeText = (m.r.Outcome || "Not disclosed in the available evidence.").trim();
+      section("div", "", outcomeText.length > 320 ? outcomeText.slice(0, 317).trimEnd() + "…" : outcomeText, outcome);
+      section("div", "tip-hint", "Click the marker for the full incident and sources.");
       const margin = 12, gap = 8;
       const w = document.documentElement.clientWidth, h = document.documentElement.clientHeight;
       tip.style.maxWidth = Math.min(420, w - margin * 2) + "px";
