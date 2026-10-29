@@ -331,3 +331,8 @@ AI-2026-0111,CrowdStrike,Unknown Threat Actor Uses AI-Driven ARTEX to Target Sou
 AI-2026-0112,Zscaler ThreatLabz,Threat Actor Abuses Agentic AI Pentesting Framework to Target South Korean Financial Institutions,https://www.zscaler.com/it/blogs/security-research/threat-actor-abuses-agentic-ai-pentesting-framework-target-south-korean
 AI-2026-0112,Zscaler ThreatLabz,Inside a Global AI-Assisted Hacking Campaign,https://www.zscaler.com/it/blogs/security-research/inside-global-ai-assisted-hacking-campaign
 AI-2026-0112,CrowdStrike,Unknown Threat Actor Uses AI-Driven ARTEX to Target South Korean Finance,https://www.crowdstrike.com/en-us/blog/unknown-threat-actor-uses-artex-to-target-south-korean-finance/
+AI-2026-0113,Cloudflare,"Cross-request KV cache exposure in the GLM-5.3 Workers AI model, and our remediation with SGLang",https://blog.cloudflare.com/kv-cache-exposure-remediation/
+AI-2026-0113,Knostic,Hallucination or Cross-Tenant: When an LLM Answers With Another User’s Context,https://www.knostic.ai/blog/hallucination-or-cross-tenant-when-an-llm-answers-with-another-users-context
+AI-2026-0113,SGLang / LMSYS,SGLang security update: improving request isolation,https://www.lmsys.org/blog/2026-10-26-cf-security
+AI-2026-0111,Recorded Future,TAG-217 Targets South Korean Financial Services with ARTEX,https://www.recordedfuture.com/blog/tag-217-artex-south-korean-banks
+AI-2026-0112,Recorded Future,TAG-217 Targets South Korean Financial Services with ARTEX,https://www.recordedfuture.com/blog/tag-217-artex-south-korean-banks
