@@ -336,3 +336,6 @@ AI-2026-0113,Knostic,Hallucination or Cross-Tenant: When an LLM Answers With Ano
 AI-2026-0113,SGLang / LMSYS,SGLang security update: improving request isolation,https://www.lmsys.org/blog/2026-10-26-cf-security
 AI-2026-0111,Recorded Future,TAG-217 Targets South Korean Financial Services with ARTEX,https://www.recordedfuture.com/blog/tag-217-artex-south-korean-banks
 AI-2026-0112,Recorded Future,TAG-217 Targets South Korean Financial Services with ARTEX,https://www.recordedfuture.com/blog/tag-217-artex-south-korean-banks
+AI-2026-0114,NorForge,Automated Subversion and Attempted Takeover of AI Pentesting Harnesses,https://norforge.com/blog/automated-subversion-attempted-takeover
+AI-2026-0114,Brian Deitch,Cairn: The AI Hacking Agents Got Hacked,https://briandeitch.com/blog/cairn-ai-pentest-agents-hijacked
+AI-2026-0014,"Orel Navi, Elad Feldman and Ben Nassi",LLM WikiLeaks: Uncovering URL-Based Capability Extension and Security Circumvention in Agentic Message Boards,https://arxiv.org/html/2610.34542v1
