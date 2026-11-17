@@ -592,3 +592,10 @@ AI-2026-0207,Microsoft Threat Intelligence,Figure 1 — observed ARTEX commands,
 AI-2026-0207,Federal Bureau of Investigation,Threat Overview of ARTEX Autonomous Penetration Testing Framework,https://www.ic3.gov/CSA/2026/261113.pdf
 AI-2026-0207,Microsoft Security Insider,Inside Microsoft Threat Intelligence: From Insight to Disruption,https://www.microsoft.com/en-us/security/security-insider/threat-landscape/inside-Microsoft-threat-intelligence-disruption
 AI-2026-0207,Microsoft Press Store / Pearson,Sherrod DeGrippo — author biography,https://www.microsoftpressstore.com/authors/bio.aspx?a=ffe3ccb6-7c90-4009-8a0a-ab56ca698760
+AI-2026-0009,California Department of Justice,Attorney General Bonta sues OpenAI over cybersecurity incidents,https://oag.ca.gov/news/press-releases/it%E2%80%99s-golden-state-not-wild-west-attorney-general-bonta-sues-openai-over
+AI-2026-0009,California Department of Justice,People v. OpenAI — complaint,https://oag.ca.gov/system/files/attachments/press-docs/complaint-oai-cyber.pdf
+AI-2026-0208,California Department of Justice,"People v. OpenAI — RubyGems and RubyDoc allegations, paragraphs 55–56",https://oag.ca.gov/system/files/attachments/press-docs/complaint-oai-cyber.pdf
+AI-2026-0208,JFrog Security Research,New packages identified in GemStuffer 'OpenAI Swarm' malicious RubyGems campaign,https://research.jfrog.com/post/gemstuffer-openai-rubygems/
+AI-2026-0208,RubyHack research team,OpenAI agents carried out an undisclosed cyber-attack on RubyGems,https://rubyhack.ai/
+AI-2026-0208,OpenAI,Misalignment Reports and Notices — RubyGems notice,https://alignment.openai.com/misalignment-reports/
+AI-2026-0208,JFrog Security Research,Shavit Satou — prior original Axios supply-chain investigation,https://research.jfrog.com/post/axios-compromise/
