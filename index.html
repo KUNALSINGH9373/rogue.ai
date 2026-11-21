@@ -87,7 +87,35 @@
   .facts li { padding: 0 20px; border-left: 1px solid var(--line); }
   .facts li:first-child { padding-left: 0; border-left: 0; }
   .facts b { color: var(--fg); font-weight: 600; }
-  .sec { margin-top: 44px; }
+  .sec { margin-top: 20px; background: var(--card); border: 1px solid var(--line); border-radius: 20px; padding: 24px 28px;
+         box-shadow: 0 1px 2px #5a4f400a, 0 14px 34px -22px #5a4f4033; }
+  .grid2 { gap: 0 20px !important; }
+  .reveal { opacity: 0; transform: translateY(14px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 30px; }
+  .kpi { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px 18px 14px;
+         box-shadow: 0 1px 2px #5a4f400a, 0 14px 34px -24px #5a4f4033; overflow: hidden; min-height: 112px; }
+  .kpi-l { display: block; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .kpi-n { display: block; font: 500 38px/1.1 Fraunces, Georgia, serif; color: #4f4a44; margin: 6px 0 4px; }
+  .kpi-d { display: inline-block; font-size: 11.5px; padding: 2px 8px; border-radius: 999px; }
+  .kpi-d.up { background: #fbe9e5; color: #a5442f; }
+  .kpi-d.down { background: #e7f0eb; color: #47705d; }
+  .kpi-d.flat, .kpi-d.note-d { background: none; padding: 0; color: var(--muted); }
+  .spark { position: absolute; right: 14px; top: 18px; width: 96px; height: 30px; }
+  .spot { border-left: 4px solid var(--accent-c, #b3aca2); }
+  .spot-title { margin: 0 0 10px; font: 500 26px/1.25 Fraunces, Georgia, serif; color: #4f4a44; }
+  .spot-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .spot-meta span { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--head); color: #6e6860; }
+  .spot-sum { margin: 0 0 8px; font-size: 15px; line-height: 1.65; color: var(--fg); max-width: 78ch; }
+  .spot-out { margin: 0 0 16px; font-size: 13px; line-height: 1.6; color: var(--muted); max-width: 78ch; }
+  .spot-foot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .spot-src { display: flex; flex-wrap: wrap; gap: 6px; }
+  .spot-src a { font-size: 12px; padding: 4px 11px; border-radius: 999px; border: 1px solid var(--line); color: #6f8f86; text-decoration: none; background: #fff; }
+  .spot-src a:hover { border-color: var(--accent); }
+  .spot-open { border: 0; background: #4f4a44; color: #fffdf9; border-radius: 999px; padding: 8px 16px; font: inherit; font-size: 13px; cursor: pointer; }
+  .spot-open:hover { background: #3d3934; }
+  .map-wrap { display: grid; grid-template-columns: minmax(0, 2.4fr) minmax(200px, 1fr); gap: 28px; align-items: center; }
+  .mini-h { font-size: 12px; font-weight: 600; color: var(--fg); margin-bottom: 12px; }
   .sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
   .sec-head h3 { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
   .ranges { display: flex; gap: 18px; }
@@ -132,11 +160,14 @@
   #mix-svg { display: block; width: 100%; overflow: visible; }
   #mix-svg text { font: 11px Inter, sans-serif; fill: #aaa298; }
   .latest { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-  .latest li { display: grid; grid-template-columns: 10px 1fr auto; gap: 14px; align-items: baseline; padding: 14px 4px;
+  .latest li { display: grid; grid-template-columns: 10px 1fr auto; gap: 14px; align-items: start; padding: 14px 4px;
                border-bottom: 1px solid var(--line); cursor: pointer; transition: background .15s; }
   .latest li:hover { background: #fffdf980; }
   .latest i { width: 8px; height: 8px; border-radius: 50%; transform: translateY(-1px); }
   .latest span { font-size: 15px; color: var(--fg); }
+  .latest i { margin-top: 7px; }
+  .latest p { margin: 3px 0 0; font-size: 13px; color: var(--muted); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+  .latest small { text-align: right; line-height: 1.6; }
   .latest small { font-size: 12px; color: var(--muted); white-space: nowrap; }
   .more { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--line); }
   .more:hover { border-bottom-color: var(--fg); }
@@ -194,8 +225,13 @@
     .sec { margin-top: 32px; }
     .latest span { font-size: 14px; }
     .grid2 { grid-template-columns: 1fr; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 24px; }
+    .kpi { padding: 14px; min-height: 0; } .kpi-n { font-size: 30px; } .spark { width: 64px; height: 24px; right: 10px; top: 14px; }
+    .sec { padding: 18px 16px; border-radius: 16px; }
+    .spot-title { font-size: 21px; }
+    .map-wrap { grid-template-columns: 1fr; gap: 16px; }
     .row { grid-template-columns: 92px 1fr 30px; }
-    .latest li { grid-template-columns: 10px 1fr; } .latest small { grid-column: 2; }
+    .latest li { grid-template-columns: 10px 1fr; } .latest small { grid-column: 2; text-align: left; }
     .bar input { flex-basis: 100%; }
     .bar button#reset { padding: 6px 14px; font-size: 13px; }
     /* Table becomes a stack of cards */
@@ -235,7 +271,16 @@
   </div>
   <div class="since"><b id="since-n">—</b><span id="since-l">days since the last AI incident</span></div>
 </section>
-<section class="sec">
+<section class="kpis reveal" id="kpis"></section>
+<section class="sec spot reveal" id="spot" hidden>
+  <div class="sec-head"><h3>Spotlight · latest incident with an official source</h3></div>
+  <h4 class="spot-title"></h4>
+  <div class="spot-meta"></div>
+  <p class="spot-sum"></p>
+  <p class="spot-out"></p>
+  <div class="spot-foot"><div class="spot-src"></div><button class="spot-open">Open incident →</button></div>
+</section>
+<section class="sec reveal">
   <div class="sec-head">
     <h3>Timeline</h3>
     <div class="ranges" id="ranges">
@@ -256,36 +301,39 @@
   <div class="tl-foot" id="tl-foot"></div>
 </section>
 <div class="grid2">
-  <section class="sec">
+  <section class="sec reveal">
     <div class="sec-head"><h3>Who built the AI</h3></div>
     <div class="rows" id="devs"></div>
     <div class="note" id="devs-note"></div>
   </section>
-  <section class="sec">
+  <section class="sec reveal">
     <div class="sec-head"><h3>Rogue agents vs human misuse</h3></div>
     <svg id="mix-svg" role="img" aria-label="Incidents per month by type"></svg>
     <div class="key2"><span><i style="background:#c0533f"></i>Agents acting on their own</span><span><i style="background:#4f7cc4"></i>Humans misusing AI</span></div>
   </section>
 </div>
-<section class="sec">
+<section class="sec reveal">
   <div class="sec-head"><h3>Where incidents happened</h3>
     <div class="ramp" id="map-ramp">Fewer <i style="background:#f5d5cb"></i><i style="background:#eba596"></i><i style="background:#dc7a68"></i><i style="background:#c0533f"></i><i style="background:#8f3626"></i> More</div></div>
-  <svg id="map-svg" role="img" aria-label="World map of incidents by country"></svg>
+  <div class="map-wrap">
+    <svg id="map-svg" role="img" aria-label="World map of incidents by country"></svg>
+    <div><div class="mini-h">Top locations</div><div class="rows" id="map-top"></div></div>
+  </div>
   <div class="note" id="map-note"></div>
 </section>
 <div class="grid2">
-  <section class="sec">
+  <section class="sec reveal">
     <div class="sec-head"><h3>Time to disclosure</h3></div>
     <p class="big" id="lag-big">—</p>
     <div class="note" id="lag-sub" style="margin:0 0 14px"></div>
     <div class="rows" id="lag"></div>
   </section>
-  <section class="sec">
+  <section class="sec reveal">
     <div class="sec-head"><h3>Transparency</h3></div>
     <div id="transp"></div>
   </section>
 </div>
-<section class="sec">
+<section class="sec reveal">
   <div class="sec-head"><h3>Latest</h3></div>
   <ul class="latest" id="latest"></ul>
   <a class="more" href="#data">See all incidents →</a>
@@ -367,12 +415,12 @@ function renderStats() {
   const sources = data.reduce((n, r) => n + r._sources.length, 0);
   const pct = Math.round(unintended / data.length * 100);
   const shown = data.filter(dashMatch).length;
-  document.getElementById("hero-n").textContent = shown;
+  countTo(document.getElementById("hero-n"), shown);
   const what = [unknownOnly ? "unknown-model" : "", filters.Company && filters.Company !== "Both" ? filters.Company : filters.Company === "Both" ? "OpenAI + Anthropic" : ""].filter(Boolean).join(" ");
   document.getElementById("hero-l").textContent = `${what ? what + " " : "AI "}incident${shown === 1 ? "" : "s"} on record`;
   const facts = document.getElementById("facts");
   facts.replaceChildren();
-  document.getElementById("since-n").textContent = daysSince;
+  countTo(document.getElementById("since-n"), daysSince);
   document.getElementById("since-l").textContent = `day${daysSince === 1 ? "" : "s"} since the last AI incident`;
   for (const [v, l] of [[`${pct}%`, "were agents acting on their own"], [sources, "sources cited"]]) {
     const li = document.createElement("li"), bEl = document.createElement("b");
@@ -439,7 +487,7 @@ function renderDevs(rows) {
 
 function renderMix(rows) {
   const svg = document.getElementById("mix-svg"), NS = "http://www.w3.org/2000/svg";
-  const W = svg.clientWidth || 480, H = 190, axis = 20, top = 14;
+  const W = svg.clientWidth || 480, H = innerWidth < 700 ? 190 : 236, axis = 20, top = 14;
   const end = today(), months = [];
   for (let i = 11; i >= 0; i--) months.push(new Date(end.getFullYear(), end.getMonth() - i, 1));
   const cols = months.map(m => ({ m, a: 0, h: 0 }));
@@ -523,6 +571,12 @@ async function renderMap(rows) {
       if (!counts[f.properties.name]) return;
       tip.style.opacity = 0; countryFilter = f.properties.name; selId = ""; selWeek = null; render(); location.hash = "data";
     });
+  const top = Object.entries({ ...counts, ...offMap }).sort((a, b) => b[1] - a[1]).slice(0, 8)
+    .map(([label, n]) => ({ label: label === "United States of America" ? "United States" : label, key: label, n, color: rampOf(n),
+      title: `${label}: ${n} incident${n === 1 ? "" : "s"} · click to see them` }));
+  barRows(document.getElementById("map-top"), top, Math.max(1, ...top.map(i => i.n)), it => {
+    countryFilter = it.key; selId = ""; selWeek = null; render(); location.hash = "data";
+  });
   document.getElementById("map-ramp").style.visibility = located ? "visible" : "hidden";
   if (!located) { note.textContent = "None of these incidents has a known location yet."; return; }
   const extra = Object.entries(offMap).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join(", ");
@@ -564,8 +618,115 @@ function renderTransparency(rows) {
 
 function renderCharts() {
   const rows = data.filter(dashMatch);
+  renderKpis(rows); renderSpotlight(rows);
   renderDevs(rows); renderMix(rows); renderLag(rows); renderTransparency(rows); renderMap(rows);
 }
+
+// ---- Richer dashboard pieces: KPI row, spotlight, count-up numbers, scroll reveal ----
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function countTo(el, n) {
+  const from = +el.dataset.n || 0;
+  el.dataset.n = n;
+  if (reduceMotion || from === n || !Number.isFinite(n)) { el.textContent = n; return; }
+  const t0 = performance.now(), dur = 700;
+  const step = t => {
+    const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(from + (n - from) * e);
+    if (k < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+function sparkline(svg, values, color) {
+  const NS = "http://www.w3.org/2000/svg", W = 120, H = 34, max = Math.max(1, ...values);
+  const pts = values.map((v, i) => [i / (values.length - 1) * W, H - 3 - v / max * (H - 8)]);
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.innerHTML = "";
+  const area = document.createElementNS(NS, "path");
+  area.setAttribute("d", `M0 ${H} ` + pts.map(p => `L${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ") + ` L${W} ${H} Z`);
+  area.setAttribute("fill", color); area.setAttribute("opacity", ".12");
+  const line = document.createElementNS(NS, "path");
+  line.setAttribute("d", pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" "));
+  line.setAttribute("fill", "none"); line.setAttribute("stroke", color); line.setAttribute("stroke-width", "2");
+  line.setAttribute("stroke-linecap", "round"); line.setAttribute("stroke-linejoin", "round");
+  const end = document.createElementNS(NS, "circle");
+  end.setAttribute("cx", pts.at(-1)[0]); end.setAttribute("cy", pts.at(-1)[1]); end.setAttribute("r", "3");
+  end.setAttribute("fill", color); end.setAttribute("stroke", "#fffdf9"); end.setAttribute("stroke-width", "2");
+  svg.append(area, line, end);
+}
+
+function renderKpis(rows) {
+  const t = today(), dates = rows.map(r => parseDate(r["Disclosed on"])).filter(Boolean);
+  const inWin = (from, to) => dates.filter(d => d > new Date(t - to * DAY) && d <= new Date(t - from * DAY)).length;
+  const week = inWin(0, 7), prevWeek = inWin(7, 14), month = inWin(0, 30), prevMonth = inWin(30, 60);
+  const weeks = Array.from({ length: 12 }, (_, i) => inWin((11 - i) * 7, (12 - i) * 7));
+  const months = Array.from({ length: 12 }, (_, i) => inWin((11 - i) * 30, (12 - i) * 30));
+  const places = new Set(rows.flatMap(countriesOf)), devs = new Set(rows.flatMap(devsOf));
+  const tiles = [
+    { label: "Last 7 days", n: week, delta: week - prevWeek, vs: "vs previous 7 days", spark: weeks },
+    { label: "Last 30 days", n: month, delta: month - prevMonth, vs: "vs previous 30 days", spark: months },
+    { label: "Countries affected", n: places.size, note: `${rows.filter(r => countriesOf(r).length).length} incidents with a known location` },
+    { label: "Developers named", n: devs.size, note: `${rows.filter(r => devsOf(r).length).length} incidents name a developer` },
+  ];
+  const el = document.getElementById("kpis");
+  if (!el.children.length) {
+    for (let i = 0; i < tiles.length; i++) {
+      const d = document.createElement("div"); d.className = "kpi";
+      d.innerHTML = '<span class="kpi-l"></span><b class="kpi-n">0</b><span class="kpi-d"></span><svg class="spark" aria-hidden="true"></svg>';
+      el.appendChild(d);
+    }
+  }
+  tiles.forEach((tl, i) => {
+    const d = el.children[i];
+    d.querySelector(".kpi-l").textContent = tl.label;
+    countTo(d.querySelector(".kpi-n"), tl.n);
+    const dl = d.querySelector(".kpi-d"), sp = d.querySelector(".spark");
+    if ("delta" in tl) {
+      // More incidents is worse, so a rise is shown in the warm tone and a fall in the calm one
+      dl.className = "kpi-d " + (tl.delta > 0 ? "up" : tl.delta < 0 ? "down" : "flat");
+      dl.textContent = `${tl.delta > 0 ? "▲ " + tl.delta : tl.delta < 0 ? "▼ " + -tl.delta : "No change"} ${tl.vs}`;
+      sparkline(sp, tl.spark, "#c0533f"); sp.style.display = "";
+    } else {
+      dl.className = "kpi-d note-d"; dl.textContent = tl.note; sp.style.display = "none";
+    }
+  });
+}
+
+function renderSpotlight(rows) {
+  const el = document.getElementById("spot");
+  const dated = rows.map(r => ({ r, d: parseDate(r["Disclosed on"]) })).filter(x => x.d).sort((a, b) => b.d - a.d);
+  const pick = dated.find(x => /^https?:\/\//.test((x.r["Official source URL"] || "").trim())) || dated[0];
+  if (!pick) { el.hidden = true; return; }
+  el.hidden = false;
+  const { r, d } = pick, grp = groupClass(r);
+  el.style.setProperty("--accent-c", `var(--m-${grp})`);
+  el.querySelector(".spot-title").textContent = r["Event title"] || "Untitled incident";
+  const meta = el.querySelector(".spot-meta"); meta.replaceChildren();
+  for (const v of [companyGroup(r) === "Other" ? (devsOf(r)[0] || "Developer not named") : companyGroup(r),
+                   hasUnknownModel(r.Model) ? "Model not disclosed" : r.Model,
+                   countriesOf(r).join(", ") || "Location unknown", fmtDate(d), r.Category]) {
+    if (!v) continue;
+    const s = document.createElement("span"); s.textContent = v; meta.appendChild(s);
+  }
+  el.querySelector(".spot-sum").textContent = r["Incident summary"] || "";
+  el.querySelector(".spot-out").textContent = r.Outcome ? "Outcome: " + r.Outcome : "";
+  const links = el.querySelector(".spot-src"); links.replaceChildren();
+  for (const s of r._sources.slice(0, 4)) {
+    const a = document.createElement("a"); a.href = s.URL; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = s.Publisher || new URL(s.URL).hostname.replace(/^www\./, ""); links.appendChild(a);
+  }
+  el.querySelector(".spot-open").onclick = () => { selWeek = null; selId = r["Incident ID"]; render(); location.hash = "data"; };
+}
+
+// Sections fade up as they scroll into view
+function setupReveal() {
+  const els = document.querySelectorAll("#view-dash .reveal");
+  if (reduceMotion || !("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -8% 0px" });
+  els.forEach(e => io.observe(e));
+}
+setupReveal();
 
 function renderLatest() {
   const list = document.getElementById("latest");
@@ -575,9 +736,15 @@ function renderLatest() {
   for (const { r, d } of recent) {
     const li = document.createElement("li");
     const dot = document.createElement("i"); dot.style.background = `var(--m-${groupClass(r)})`;
+    const body = document.createElement("div");
     const t = document.createElement("span"); t.textContent = r["Event title"] || "Untitled incident";
-    const meta = document.createElement("small"); meta.textContent = `${companyGroup(r)} · ${fmtDate(d)}`;
-    li.append(dot, t, meta);
+    const sum = document.createElement("p"); sum.textContent = r["Incident summary"] || "";
+    body.append(t, sum);
+    const meta = document.createElement("small");
+    const where = countriesOf(r).join(", ");
+    meta.append(fmtDate(d), document.createElement("br"),
+      `${companyGroup(r)}${where ? " · " + where : ""} · ${r._sources.length} source${r._sources.length === 1 ? "" : "s"}`);
+    li.append(dot, body, meta);
     li.tabIndex = 0;
     li.onclick = () => { selWeek = null; selId = r["Incident ID"]; render(); location.hash = "data"; };
     li.onkeydown = e => { if (e.key === "Enter") li.onclick(); };
