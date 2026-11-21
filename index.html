@@ -173,6 +173,41 @@
   .ramp i { width: 22px; height: 8px; border-radius: 2px; }
   #mix-svg { display: block; width: 100%; overflow: visible; }
   #mix-svg text { font: 12px Inter, sans-serif; fill: #6b645b; }
+  #view-evid { max-width: 1080px; margin: 0 auto; }
+  .ev-hero h2 span { font: 500 40px/1.15 Fraunces, Georgia, serif; color: #2f2b27; }
+  .ev-lede { margin: 12px 0 0; font-size: 16px; color: var(--muted); max-width: 62ch; line-height: 1.6; }
+  .known-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; }
+  .pending { font-size: 14px; line-height: 1.65; color: var(--fg); background: var(--head); border-radius: 14px; padding: 16px 18px; }
+  .grid2.inner { margin: 0; }
+  .trail-bar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .trail-bar input { flex: 1 1 260px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--fg); font: inherit; font-size: 14px; }
+  .trail-bar button, .more-btn { padding: 9px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--fg); font: inherit; font-size: 13px; cursor: pointer; }
+  .more-btn { margin-top: 14px; }
+  .trails { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .trails > li { border-bottom: 1px solid var(--line); }
+  .tr-head { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; align-items: baseline; text-align: left;
+             background: none; border: 0; padding: 14px 4px; font: inherit; color: var(--fg); cursor: pointer; }
+  .tr-head:hover { background: #f7f4ee80; }
+  .tr-head::before { content: "▸"; position: absolute; margin-left: -16px; color: var(--muted); font-size: 12px; }
+  .tr-head[aria-expanded="true"]::before { content: "▾"; }
+  .tr-title { font-size: 15px; font-weight: 500; }
+  .tr-tier { font-size: 12px; padding: 2px 10px; border-radius: 999px; background: var(--head); color: var(--fg); white-space: nowrap; }
+  .tr-tier::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--tc); margin-right: 6px; }
+  .rows.wide .row { grid-template-columns: 178px 1fr 40px; }
+  .tr-meta { grid-column: 1 / -1; font-size: 13px; color: var(--muted); }
+  .trails { padding-left: 16px; }
+  .steps { list-style: none; margin: 4px 0 18px; padding: 0 0 0 22px; position: relative; }
+  .steps::before { content: ""; position: absolute; left: 6px; top: 8px; bottom: 8px; width: 2px; background: var(--line); }
+  .steps li { position: relative; padding: 0 0 16px; }
+  .steps li::before { content: ""; position: absolute; left: -21px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: var(--card); border: 2px solid #8a7f74; }
+  .steps li:first-child::before { background: #c0533f; border-color: #c0533f; }
+  .st-top { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .st-kind { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .st-date { font-size: 13px; color: var(--muted); }
+  .st-title { display: block; font-size: 14px; color: var(--fg); margin-top: 2px; }
+  a.st-title { color: #3f6f63; text-decoration: none; border-bottom: 1px solid transparent; }
+  a.st-title:hover { border-bottom-color: currentColor; }
+  .steps p { margin: 4px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--fg); max-width: 80ch; }
   .latest { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .latest li { display: grid; grid-template-columns: 10px 1fr auto; gap: 14px; align-items: start; padding: 14px 4px;
                border-bottom: 1px solid var(--line); cursor: pointer; transition: background .15s; }
@@ -239,6 +274,10 @@
     .sec { margin-top: 32px; }
     .latest span { font-size: 14px; }
     .grid2 { grid-template-columns: 1fr; }
+    .known-grid { grid-template-columns: 1fr; }
+    .ev-hero h2 span { font-size: 28px; }
+    .tr-head { grid-template-columns: 1fr; } .tr-tier { justify-self: start; }
+    .rows.wide .row { grid-template-columns: 132px 1fr 32px; }
     .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 24px; }
     .kpi { padding: 14px; min-height: 0; } .kpi-n { font-size: 30px; } .spark { width: 64px; height: 24px; right: 10px; top: 14px; }
     .sec { padding: 18px 16px; border-radius: 16px; }
@@ -275,7 +314,7 @@
 <body>
 <div class="halo" aria-hidden="true"><i></i><i></i><i></i></div>
 <header><h1>Rogue <b>.</b> AI</h1><div class="hal" title="HAL 9000, 2001: A Space Odyssey (1968)"><i class="eye"></i><q>I'm sorry, Dave. I'm afraid I can't do that.</q><small>— HAL 9000</small></div>
-<nav class="tabs"><a href="#" data-view="dash">Dashboard</a><a href="#data" data-view="data">Data</a></nav></header>
+<nav class="tabs"><a href="#" data-view="dash">Dashboard</a><a href="#evidence" data-view="evid">Evidence</a><a href="#data" data-view="data">Data</a></nav></header>
 
 <main>
 <div id="view-dash">
@@ -354,6 +393,52 @@
   <a class="more" href="#data">See all incidents →</a>
 </section>
 <div class="tip" id="tip" role="tooltip"></div>
+</div>
+<div id="view-evid" hidden>
+<section class="hero ev-hero">
+  <div>
+    <h2><span>Evidence &amp; what happened afterward</span></h2>
+    <p class="ev-lede">How well each incident is sourced, how much remains unknown, and what was done about it. Every claim links back to where it came from.</p>
+  </div>
+</section>
+<section class="kpis" id="ev-kpis"></section>
+<div class="grid2">
+  <section class="sec">
+    <div class="sec-head"><h3>Strength of evidence</h3></div>
+    <div class="note" style="margin:0 0 14px">Each incident counted once, at its strongest type of source. Click a bar to list those incidents.</div>
+    <div class="rows wide" id="ev-tier"></div>
+  </section>
+  <section class="sec">
+    <div class="sec-head"><h3>Independent corroboration</h3></div>
+    <p class="big" id="ev-orig-big">—</p>
+    <div class="note" style="margin:0 0 14px">of incidents are backed by two or more independent origins. Ten articles quoting the same report count as one origin.</div>
+    <div class="rows wide" id="ev-orig"></div>
+  </section>
+</div>
+<section class="sec">
+  <div class="sec-head"><h3>What we know, and what we don't</h3></div>
+  <div class="known-grid" id="ev-known"></div>
+</section>
+<section class="sec">
+  <div class="sec-head"><h3>What happened afterward</h3></div>
+  <div id="ev-after-pending" class="pending">
+    <b>Being researched.</b> Investigations, lawsuits, regulatory actions, company fixes and remedies are being added to the dataset for every incident.
+    This section fills in automatically once they're in. Until then, each incident's trail below shows its outcome so far.
+  </div>
+  <div id="ev-after" hidden>
+    <div class="grid2 inner">
+      <div><p class="big" id="ev-gap">—</p><div class="note" style="margin:0 0 14px">of incidents have no documented response</div>
+        <div class="mini-h">Response status</div><div class="rows" id="ev-status"></div></div>
+      <div><div class="mini-h">Type of response</div><div class="rows" id="ev-resp"></div></div>
+    </div>
+  </div>
+</section>
+<section class="sec" id="ev-trails-sec">
+  <div class="sec-head"><h3>Evidence trails</h3><span class="note" id="ev-trail-count" style="margin:0"></span></div>
+  <div class="trail-bar"><input id="ev-q" type="search" placeholder="Search incidents, companies or publishers…"><button id="ev-tier-clear" hidden>Clear evidence filter</button></div>
+  <ul class="trails" id="ev-trails"></ul>
+  <button class="more-btn" id="ev-more" hidden>Show more</button>
+</section>
 </div>
 <div id="view-data" hidden>
 <div class="bar">
@@ -746,6 +831,161 @@ function setupReveal() {
 }
 setupReveal();
 
+// ---- Evidence tab: strength of evidence, corroboration, known vs unknown, follow-ups, per-incident trails ----
+const ROLE_ORDER = ["Government record", "Company confirmation", "Research verification", "Reporting / analysis", "Firsthand account"];
+const TIER_LABEL = { "Government record": "Government record", "Company confirmation": "Company confirmation",
+  "Research verification": "Independent research", "Reporting / analysis": "News & analysis only",
+  "Firsthand account": "Firsthand account only", "": "No sources listed" };
+const TIER_COLOR = { "Government record": "#3d342c", "Company confirmation": "#5f5248", "Research verification": "#85776a",
+  "Reporting / analysis": "#ab9e90", "Firsthand account": "#cfc4b7", "": "#e4ddd2" };
+const tierOf = r => ROLE_ORDER.find(role => r._sources.some(s => (s["Source role"] || "").trim() === role)) || "";
+const originsOf = r => new Set(r._sources.map(s => (s["Evidence origin"] || "").trim().toLowerCase()).filter(Boolean));
+const hasAfter = () => data.some(r => (r["Response type"] || "").trim());
+const responsesOf = r => (r["Response type"] || "").split(";").map(v => v.trim()).filter(Boolean);
+let tierFilter = null, trailQuery = "", trailLimit = 20, openTrails = new Set();
+
+function renderEvidence() {
+  if (!data.length) return;
+  const n = data.length, pct = k => Math.round(k / n * 100);
+  const tiers = data.map(tierOf);
+  const official = tiers.filter(t => t === "Government record" || t === "Company confirmation").length;
+  const single = data.filter(r => originsOf(r).size === 1).length;
+  const srcCounts = data.map(r => r._sources.length).sort((a, b) => a - b);
+  const medianSrc = srcCounts[srcCounts.length >> 1] || 0;
+  const noResp = hasAfter() ? data.filter(r => { const t = responsesOf(r); return !t.length || t.every(v => /none/i.test(v)); }).length : null;
+
+  // KPI row
+  const kp = document.getElementById("ev-kpis"); kp.replaceChildren();
+  for (const [label, val, note] of [
+    ["Officially confirmed", `${pct(official)}%`, `${official} incidents backed by a government record or the company itself`],
+    ["Single origin", `${pct(single)}%`, `${single} incidents trace back to one original investigation`],
+    ["Sources per incident", medianSrc, "median number of sources linked"],
+    ["No documented response", noResp === null ? "—" : `${pct(noResp)}%`, noResp === null ? "being researched" : `${noResp} incidents with no follow-up on record`],
+  ]) {
+    const d = document.createElement("div"); d.className = "kpi";
+    d.innerHTML = '<span class="kpi-l"></span><b class="kpi-n"></b><span class="kpi-d note-d"></span>';
+    d.children[0].textContent = label; d.children[1].textContent = val; d.children[2].textContent = note;
+    kp.appendChild(d);
+  }
+
+  // Strength of evidence: each incident counted once, at its strongest source type
+  const tierItems = [...ROLE_ORDER, ""].map(t => ({ key: t, label: TIER_LABEL[t], n: tiers.filter(x => x === t).length, color: TIER_COLOR[t],
+    title: `${TIER_LABEL[t]}: ${tiers.filter(x => x === t).length} incidents · click to list them` })).filter(i => i.n);
+  barRows(document.getElementById("ev-tier"), tierItems, Math.max(...tierItems.map(i => i.n)), it => {
+    tierFilter = tierFilter === it.key ? null : it.key; trailLimit = 20; renderTrails();
+    document.getElementById("ev-trails-sec").scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // Independent corroboration
+  const oc = data.map(r => originsOf(r).size);
+  const ocItems = [["No origin recorded", 0, 0], ["1 origin", 1, 1], ["2 origins", 2, 2], ["3 or more", 3, Infinity]]
+    .map(([label, lo, hi]) => ({ label, n: oc.filter(v => v >= lo && v <= hi).length, color: lo >= 2 ? "#5f5248" : "#ab9e90" })).filter(i => i.n);
+  barRows(document.getElementById("ev-orig"), ocItems, Math.max(...ocItems.map(i => i.n)));
+  document.getElementById("ev-orig-big").textContent = `${pct(oc.filter(v => v >= 2).length)}%`;
+
+  // What we know vs what we don't
+  const kn = document.getElementById("ev-known"); kn.replaceChildren();
+  for (const [label, k] of [
+    ["Developer", data.filter(r => devsOf(r).length).length],
+    ["AI model", data.filter(r => !hasUnknownModel(r.Model)).length],
+    ["Exact date it happened", data.filter(r => parseDate(r["Occurred on"])).length],
+    ["Location", data.filter(r => countriesOf(r).length).length],
+    ["Official source link", data.filter(r => /^https?:\/\//.test((r["Official source URL"] || "").trim())).length],
+  ]) {
+    const m = document.createElement("div"); m.className = "meter";
+    const top = document.createElement("div"); top.className = "meter-top";
+    const l = document.createElement("span"); l.textContent = `${label} · known for ${k} of ${n}, unknown for ${n - k}`;
+    const v = document.createElement("b"); v.textContent = `${pct(k)}%`;
+    top.append(l, v);
+    const trk = document.createElement("div"); trk.className = "meter-trk";
+    const f = document.createElement("div"); f.className = "meter-fill"; f.style.width = pct(k) + "%";
+    trk.appendChild(f); m.append(top, trk); kn.appendChild(m);
+  }
+
+  // What happened afterward (fills in once the follow-up columns are populated)
+  const af = document.getElementById("ev-after"), pend = document.getElementById("ev-after-pending");
+  af.hidden = !hasAfter(); pend.hidden = hasAfter();
+  if (hasAfter()) {
+    document.getElementById("ev-gap").textContent = `${pct(noResp)}%`;
+    const types = {};
+    for (const r of data) for (const t of responsesOf(r)) if (!/none/i.test(t)) types[t] = (types[t] || 0) + 1;
+    const tItems = Object.entries(types).sort((a, b) => b[1] - a[1]).map(([label, k]) => ({ label, n: k, color: "#c0533f" }));
+    barRows(document.getElementById("ev-resp"), tItems, Math.max(1, ...tItems.map(i => i.n)));
+    const st = {};
+    for (const r of data) { const v = (r["Response status"] || "").trim() || "Unknown"; st[v] = (st[v] || 0) + 1; }
+    const sItems = ["Ongoing", "Resolved", "Unknown"].filter(k => st[k]).map(k => ({ label: k, n: st[k], color: k === "Resolved" ? "#5f8f7a" : k === "Ongoing" ? "#d08a5a" : "#cfc4b7" }));
+    barRows(document.getElementById("ev-status"), sItems, Math.max(1, ...sItems.map(i => i.n)));
+  }
+  renderTrails();
+}
+
+// Per-incident evidence trails: occurred → each source in date order → follow-up
+function renderTrails() {
+  const list = document.getElementById("ev-trails"), q = trailQuery.toLowerCase();
+  const rows = data.filter(r => (tierFilter === null || tierOf(r) === tierFilter) &&
+      (!q || `${r["Event title"]} ${r.Company} ${r.Model} ${r._sources.map(s => s.Publisher).join(" ")}`.toLowerCase().includes(q)))
+    .map(r => ({ r, d: parseDate(r["Disclosed on"]) })).sort((a, b) => (b.d || 0) - (a.d || 0));
+  document.getElementById("ev-trail-count").textContent =
+    `${rows.length} incident${rows.length === 1 ? "" : "s"}${tierFilter !== null ? ` · strongest evidence: ${TIER_LABEL[tierFilter]}` : ""}`;
+  document.getElementById("ev-tier-clear").hidden = tierFilter === null;
+  list.replaceChildren();
+  for (const { r, d } of rows.slice(0, trailLimit)) {
+    const id = r["Incident ID"], item = document.createElement("li"), open = openTrails.has(id);
+    const head = document.createElement("button"); head.className = "tr-head"; head.setAttribute("aria-expanded", open);
+    const t = document.createElement("span"); t.className = "tr-title"; t.textContent = r["Event title"] || "Untitled incident";
+    const badge = document.createElement("span"); badge.className = "tr-tier"; badge.textContent = TIER_LABEL[tierOf(r)];
+    badge.style.setProperty("--tc", TIER_COLOR[tierOf(r)]);
+    const meta = document.createElement("span"); meta.className = "tr-meta";
+    meta.textContent = `${d ? fmtDate(d) : "Undated"} · ${r._sources.length} source${r._sources.length === 1 ? "" : "s"} · ${originsOf(r).size || "no"} origin${originsOf(r).size === 1 ? "" : "s"}`;
+    head.append(t, badge, meta);
+    head.onclick = () => { open ? openTrails.delete(id) : openTrails.add(id); renderTrails(); };
+    item.appendChild(head);
+    if (open) item.appendChild(trailSteps(r, d));
+    list.appendChild(item);
+  }
+  const more = document.getElementById("ev-more");
+  more.hidden = rows.length <= trailLimit;
+  more.textContent = `Show more (${rows.length - trailLimit} left)`;
+}
+
+function trailSteps(r, d) {
+  const ol = document.createElement("ol"); ol.className = "steps";
+  const step = (date, kind, title, body, url) => {
+    const li = document.createElement("li");
+    const top = document.createElement("div"); top.className = "st-top";
+    const k = document.createElement("span"); k.className = "st-kind"; k.textContent = kind;
+    const dt = document.createElement("span"); dt.className = "st-date"; dt.textContent = date;
+    top.append(k, dt);
+    const h = document.createElement(url ? "a" : "div"); h.className = "st-title"; h.textContent = title;
+    if (url) { h.href = url; h.target = "_blank"; h.rel = "noopener"; }
+    li.append(top, h);
+    if (body) { const p = document.createElement("p"); p.textContent = body; li.appendChild(p); }
+    ol.appendChild(li);
+  };
+  const occ = parseDate(r["Occurred on"]);
+  step(occ ? fmtDate(occ) : (r["Occurrence label"] || "Date unknown"), "Occurred", r["Incident summary"] || "", "");
+  const srcs = [...r._sources].sort((a, b) => (parseDate(a["Published on"]) || 0) - (parseDate(b["Published on"]) || 0));
+  for (const s of srcs) {
+    const pd = parseDate(s["Published on"]);
+    step(pd ? fmtDate(pd) : "Undated", (s["Source role"] || "Source").replace("Reporting / analysis", "Reporting"),
+      `${s.Publisher ? s.Publisher + " — " : ""}${s["Source title"] || s.URL}`,
+      s["Claim supported"] ? "Supports: " + s["Claim supported"] : "", s.URL);
+  }
+  if (hasAfter() && responsesOf(r).length) {
+    const fd = parseDate(r["Follow-up date"]);
+    step(fd ? fmtDate(fd) : "Date unknown", "What happened afterward",
+      `${responsesOf(r).join(", ")}${r["Response status"] ? " · " + r["Response status"] : ""}`, r.Outcome || "",
+      /^https?:\/\//.test((r["Follow-up source"] || "").trim()) ? r["Follow-up source"].trim() : "");
+  } else if (r.Outcome) {
+    step("", "Outcome so far", r.Outcome, "", "");
+  }
+  return ol;
+}
+
+document.getElementById("ev-q").oninput = e => { trailQuery = e.target.value; trailLimit = 20; renderTrails(); };
+document.getElementById("ev-more").onclick = () => { trailLimit += 20; renderTrails(); };
+document.getElementById("ev-tier-clear").onclick = () => { tierFilter = null; renderTrails(); };
+
 function renderLatest() {
   const list = document.getElementById("latest");
   list.replaceChildren();
@@ -979,8 +1219,9 @@ document.querySelectorAll("#ranges button").forEach(b => b.onclick = () => { ran
 
 // Two views: the dashboard (home) and the data table (#data)
 function showView() {
-  const view = location.hash === "#data" ? "data" : "dash";
+  const view = location.hash === "#data" ? "data" : location.hash === "#evidence" ? "evid" : "dash";
   document.getElementById("view-dash").hidden = view !== "dash";
+  document.getElementById("view-evid").hidden = view !== "evid";
   document.getElementById("view-data").hidden = view !== "data";
   document.querySelectorAll(".tabs a").forEach(a => a.classList.toggle("active", a.dataset.view === view));
   document.getElementById("tip").style.opacity = 0;
@@ -1131,6 +1372,7 @@ loadAll().then(([incidents, sources]) => {
   buildHeader();
   renderStats();
   render();
+  renderEvidence();
 }).catch(() => { document.getElementById("status").textContent = "Could not load the spreadsheet."; });
 </script>
 </body>

@@ -5,8 +5,10 @@ BASE = "https://docs.google.com/spreadsheets/d/15tpVhsFph5AHnAuUsHFBY82zPciBDJzp
 TABS = {
     "incidents": ("1500637786", ["Incident ID", "Event title", "Occurred on", "Occurrence label", "Disclosed on", "Company",
                                   "Model", "Category", "Incident summary", "Outcome", "Evidence",
-                                  "Official source URL", "Location", "Country"]),
-    "sources": ("1116836595", ["Incident ID", "Publisher", "Source title", "URL"]),
+                                  "Official source URL", "Location", "Country",
+                                  "Response type", "Response status", "Follow-up date", "Follow-up source"]),
+    "sources": ("1116836595", ["Incident ID", "Publisher", "Source title", "URL", "Published on", "Claim supported",
+                               "Source role", "Evidence origin"]),
 }
 
 for name, (gid, keep) in TABS.items():
