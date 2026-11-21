@@ -487,7 +487,7 @@ function renderDevs(rows) {
 
 function renderMix(rows) {
   const svg = document.getElementById("mix-svg"), NS = "http://www.w3.org/2000/svg";
-  const W = svg.clientWidth || 480, H = innerWidth < 700 ? 190 : 236, axis = 20, top = 14;
+  const W = svg.clientWidth || 480, H = innerWidth < 700 ? 200 : 246, axis = 20, top = 26;
   const end = today(), months = [];
   for (let i = 11; i >= 0; i--) months.push(new Date(end.getFullYear(), end.getMonth() - i, 1));
   const cols = months.map(m => ({ m, a: 0, h: 0 }));
@@ -498,13 +498,14 @@ function renderMix(rows) {
     if (/unintended/i.test(r.Category || "")) cols[i].a++; else if (/misuse/i.test(r.Category || "")) cols[i].h++;
   }
   const max = Math.max(1, ...cols.map(d => d.a + d.h));
-  const slot = W / 12, bw = Math.max(4, slot - 8), unit = (H - axis - top) / max, base = H - axis;
+  const gut = 34, slot = (W - gut) / 12, bw = Math.max(4, slot - 8), unit = (H - axis - top) / max, base = H - axis;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("height", H); svg.innerHTML = "";
   const add = (tag, at, p = svg) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); p.appendChild(e); return e; };
-  add("line", { x1: 0, x2: W, y1: base, y2: base, stroke: "#e4ddd1" });
+  add("line", { x1: gut, x2: W, y1: base, y2: base, stroke: "#e4ddd1" });
+  yAxis(add, { x0: gut, x1: W, yOf: v => base - v * unit, max, title: "Incidents per month" });
   const tip = document.getElementById("tip");
   cols.forEach((d, i) => {
-    const x = i * slot + (slot - bw) / 2, g = add("g", {});
+    const x = gut + i * slot + (slot - bw) / 2, g = add("g", {});
     let y = base;
     for (const [n, c] of [[d.a, "#c0533f"], [d.h, "#4f7cc4"]]) {   // 2px surface gap between stacked segments
       if (!n) continue;
@@ -512,7 +513,7 @@ function renderMix(rows) {
       add("rect", { x, y: y - h, width: bw, height: Math.max(1, h - 2), rx: 3, fill: c }, g);
       y -= h;
     }
-    add("rect", { x: i * slot, y: 0, width: slot, height: base, fill: "transparent" }, g);
+    add("rect", { x: gut + i * slot, y: 0, width: slot, height: base, fill: "transparent" }, g);
     if (i % (W < 420 ? 3 : 2) === 1 || i === 11) { const t = add("text", { x: x + bw / 2, y: H - 5, "text-anchor": "middle" }); t.textContent = MONTHS[d.m.getMonth()]; }
     g.onmouseenter = () => {
       const r = g.getBoundingClientRect();
@@ -754,10 +755,26 @@ function renderLatest() {
   }
 }
 
+// Y axis: a few round-number ticks with faint gridlines and labels to the left of the plot
+function niceTicks(max) {
+  const step = [1, 2, 5, 10, 20, 25, 50, 100, 200, 500].find(s => max / s <= 4) || Math.ceil(max / 4);
+  const out = [];
+  for (let v = step; v <= max; v += step) out.push(v);
+  return out;
+}
+function yAxis(add, { x0, x1, yOf, max, title }) {
+  for (const v of [0, ...niceTicks(max)]) {
+    const y = yOf(v);
+    if (v) add("line", { x1: x0, x2: x1, y1: y, y2: y, stroke: "#ece6dc" });
+    const t = add("text", { x: x0 - 6, y: y + 4, "text-anchor": "end" }); t.textContent = v;
+  }
+  if (title) { const t = add("text", { x: 0, y: 10, "text-anchor": "start" }); t.textContent = title; }
+}
+
 function renderTimeline() {
   document.getElementById("tip").style.opacity = 0;
   const svg = document.getElementById("tl-svg"), NS = "http://www.w3.org/2000/svg";
-  const W = svg.clientWidth || 800, padL = 8, padR = 44, axisH = 22;
+  const W = svg.clientWidth || 800, padL = 36, padR = 44, axisH = 22;
   const maxPlot = innerWidth < 700 ? 220 : 300;
   const end = today();
   const all = data.filter(dashMatch).map(r => ({ r, d: parseDate(r["Disclosed on"]) })).filter(x => x.d && x.d <= end);
@@ -821,7 +838,8 @@ function renderTimeline() {
       if (visibleIds.has(m.r["Incident ID"])) b.shown++;
     }
     const maxN = Math.max(...[...buckets.values()].map(b => b.n));
-    const unit = (plotH - 18) / maxN;
+    const unit = (plotH - 24) / maxN;
+    yAxis(add, { x0: padL, x1: W - padR, yOf: v => axisY - v * unit, max: maxN, title: "Incidents per week" });
     const bw = Math.max(2, (x(new Date(+start + 7 * DAY)) - x(start)) - 2);
     for (const b of buckets.values()) {
       const bx = Math.max(padL, x(b.start)), sel = selWeek && +selWeek[0] === +b.start;
@@ -868,6 +886,8 @@ function renderTimeline() {
       g.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); g.onclick(); } };
     }
   }
+  if (!useBars && levels.length)   // dot mode: each stacked dot is one incident
+    yAxis(add, { x0: padL, x1: W - padR, yOf: v => v ? base - (v - 1) * STEP : axisY, max: levels.length, title: "Incidents" });
   if (useBars) drawBars();
   else for (const m of inRange) {
     const grp = groupClass(m.r);
