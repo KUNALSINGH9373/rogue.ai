@@ -51,6 +51,20 @@
   .hal q { font-family: Fraunces, Georgia, serif; font-style: italic; font-size: 16px; color: #6e6860; }
   .hal small { color: var(--muted); font-size: 13px; }
   main { max-width: 1600px; margin: 0 auto; padding: 0 24px 40px; }
+  /* Ambient red halo: three blurred light blobs drifting slowly behind everything */
+  header, main { position: relative; z-index: 1; }
+  .halo { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .halo i { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; will-change: transform; }
+  .halo i:nth-child(1) { width: 46vw; height: 46vw; left: -8vw; top: -14vw; background: radial-gradient(circle, #f0937f 0%, #f0937f00 70%);
+                         animation: halo1 22s ease-in-out infinite alternate; }
+  .halo i:nth-child(2) { width: 38vw; height: 38vw; right: -6vw; top: -10vw; background: radial-gradient(circle, #e2604a 0%, #e2604a00 70%);
+                         opacity: .38; animation: halo2 26s ease-in-out infinite alternate; }
+  .halo i:nth-child(3) { width: 34vw; height: 34vw; left: 30vw; top: 38vh; background: radial-gradient(circle, #f4b0a0 0%, #f4b0a000 70%);
+                         opacity: .42; animation: halo3 30s ease-in-out infinite alternate; }
+  @keyframes halo1 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(22vw, 10vh) scale(1.15); } 100% { transform: translate(8vw, 30vh) scale(.95); } }
+  @keyframes halo2 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-20vw, 18vh) scale(1.2); } 100% { transform: translate(-6vw, 40vh) scale(1); } }
+  @keyframes halo3 { 0% { transform: translate(0, 0) scale(1); } 50% { transform: translate(-18vw, -20vh) scale(1.1); } 100% { transform: translate(16vw, 6vh) scale(.9); } }
+  @media (prefers-reduced-motion: reduce) { .halo i { animation: none; } }
   .tabs { justify-self: end; display: flex; gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
   .tabs a { padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; transition: background .2s, color .2s; }
   .tabs a:hover { color: var(--fg); }
@@ -259,6 +273,7 @@
 </style>
 </head>
 <body>
+<div class="halo" aria-hidden="true"><i></i><i></i><i></i></div>
 <header><h1>Rogue <b>.</b> AI</h1><div class="hal" title="HAL 9000, 2001: A Space Odyssey (1968)"><i class="eye"></i><q>I'm sorry, Dave. I'm afraid I can't do that.</q><small>— HAL 9000</small></div>
 <nav class="tabs"><a href="#" data-view="dash">Dashboard</a><a href="#data" data-view="data">Data</a></nav></header>
 
