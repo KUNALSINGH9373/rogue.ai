@@ -12,6 +12,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js" defer></script>
 <style>
   :root {
     --bg: #f7f4ee;          /* warm cream */
@@ -73,24 +75,68 @@
   .legend .both { background: var(--both-bg); color: var(--both-ink); border: 1px solid var(--both-bar); }
   .legend .chinese { background: var(--chinese-bg); color: var(--chinese-ink); border: 1px solid var(--chinese-bar); }
   .status { color: var(--muted); padding: 0 4px 12px; font-size: 12px; }
-  .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
-  .stat { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 14px 18px; }
-  .stat b { display: block; font: 500 30px/1.15 Fraunces, Georgia, serif; color: #5a564f; }
-  .stat span { font-size: 12px; color: var(--muted); }
-  .tl { margin-top: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 18px;
-        padding: 12px 20px 8px; box-shadow: 0 6px 24px #b5a99212; }
-  .tl-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .tl-top h2 { margin: 0; font-size: 14px; font-weight: 500; color: var(--fg); }
-  .tl-key { display: flex; gap: 12px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
-  .tl-key i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; vertical-align: 0; }
-  .ranges { display: flex; gap: 6px; }
-  .ranges button { border: 1px solid var(--line); background: var(--card); color: var(--muted); border-radius: 999px;
-                   padding: 3px 12px; font: inherit; font-size: 12px; cursor: pointer; }
-  .ranges button.active { background: var(--head); border-color: #d9d1c4; color: var(--fg); }
+  #view-dash { max-width: 1080px; margin: 0 auto; }
+  .hero { padding: 40px 0 8px; }
+  .hero h2 { margin: 0; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+             font: 500 26px/1.1 Fraunces, Georgia, serif; color: #8a837a; }
+  .hero h2 b { font: 500 96px/0.9 Fraunces, Georgia, serif; color: #4f4a44; letter-spacing: -0.03em; }
+  .facts { display: flex; flex-wrap: wrap; gap: 0; margin: 22px 0 0; padding: 0; list-style: none; color: var(--muted); font-size: 14px; }
+  .facts li { padding: 0 20px; border-left: 1px solid var(--line); }
+  .facts li:first-child { padding-left: 0; border-left: 0; }
+  .facts b { color: var(--fg); font-weight: 600; }
+  .sec { margin-top: 44px; }
+  .sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+  .sec-head h3 { margin: 0; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .ranges { display: flex; gap: 18px; }
+  .ranges button { border: 0; background: none; padding: 2px 0; font: inherit; font-size: 13px; color: var(--muted);
+                   cursor: pointer; border-bottom: 1.5px solid transparent; transition: color .2s, border-color .2s; }
+  .ranges button:hover { color: var(--fg); }
+  .ranges button.active { color: var(--fg); border-bottom-color: var(--fg); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+  .chips button { border: 1px solid var(--line); background: transparent; color: var(--muted); border-radius: 999px;
+                  padding: 4px 12px; font: inherit; font-size: 12px; cursor: pointer; transition: all .2s; }
+  .chips button:hover { color: var(--fg); border-color: #d9d1c4; }
+  .chips button.active { background: #4f4a44; border-color: #4f4a44; color: #fffdf9; }
   #tl-svg { display: block; width: 100%; overflow: visible; }
   #tl-svg .dot { cursor: pointer; }
-  #tl-svg text { font: 10px Inter, sans-serif; fill: var(--muted); }
-  .tl-foot { font-size: 11px; color: var(--muted); padding-top: 2px; }
+  #tl-svg text { font: 11px Inter, sans-serif; fill: #aaa298; }
+  .tl-key { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-top: 14px; font-size: 12px; color: var(--muted); }
+  .tl-key i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+  .tl-foot { text-align: center; font-size: 11px; color: #b0a89d; margin-top: 6px; min-height: 1em; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 56px; }
+  .note { font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+  .big { font: 500 40px/1 Fraunces, Georgia, serif; color: #4f4a44; margin: 0 0 4px; }
+  .rows { display: grid; gap: 9px; }
+  .row { display: grid; grid-template-columns: 116px 1fr 34px; gap: 12px; align-items: center; font-size: 13px; }
+  .row.pick { cursor: pointer; } .row.pick:hover .bar { filter: brightness(.95); }
+  .row .lbl { color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .trk { height: 10px; }
+  .row .bar { height: 100%; border-radius: 0 4px 4px 0; min-width: 2px; transition: width .4s; }
+  .row .num { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .key2 { display: flex; gap: 16px; font-size: 12px; color: var(--muted); margin-top: 10px; flex-wrap: wrap; }
+  .key2 i { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+  .meter { margin-bottom: 22px; }
+  .meter-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; font-size: 13px; color: var(--fg); margin-bottom: 8px; }
+  .meter-top b { font: 500 28px/1 Fraunces, Georgia, serif; color: #4f4a44; }
+  .meter-trk { height: 8px; background: #ebe5da; border-radius: 4px; overflow: hidden; }
+  .meter-fill { height: 100%; background: #6e6860; border-radius: 4px; transition: width .4s; }
+  #map-svg { display: block; width: 100%; }
+  #map-svg path { stroke: #f7f4ee; stroke-width: .6; transition: opacity .15s; }
+  #map-svg path.has { cursor: pointer; }
+  #map-svg path:hover { opacity: .8; }
+  .ramp { display: flex; align-items: center; gap: 3px; font-size: 11px; color: var(--muted); }
+  .ramp i { width: 22px; height: 8px; border-radius: 2px; }
+  #mix-svg { display: block; width: 100%; overflow: visible; }
+  #mix-svg text { font: 11px Inter, sans-serif; fill: #aaa298; }
+  .latest { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .latest li { display: grid; grid-template-columns: 10px 1fr auto; gap: 14px; align-items: baseline; padding: 14px 4px;
+               border-bottom: 1px solid var(--line); cursor: pointer; transition: background .15s; }
+  .latest li:hover { background: #fffdf980; }
+  .latest i { width: 8px; height: 8px; border-radius: 50%; transform: translateY(-1px); }
+  .latest span { font-size: 15px; color: var(--fg); }
+  .latest small { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .more { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--fg); text-decoration: none; border-bottom: 1px solid var(--line); }
+  .more:hover { border-bottom-color: var(--fg); }
   .tip { position: fixed; pointer-events: none; background: #5a564f; color: #fffdf9; font-size: 12px; padding: 14px 16px;
          width: max-content; max-width: min(420px, calc(100% - 24px)); line-height: 1.5;
          border-radius: 12px; white-space: normal; overflow-wrap: anywhere; opacity: 0; transition: opacity .1s; z-index: 10;
@@ -137,9 +183,15 @@
     .hal { flex-wrap: wrap; justify-content: center; }
     .hal { gap: 8px; } .hal q { font-size: 14px; } .eye { width: 16px; height: 16px; }
     main { padding: 0 16px 24px; }
-    .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-    .stat { padding: 10px 14px; } .stat b { font-size: 24px; }
-    .tl { padding: 12px 14px 6px; border-radius: 14px; }
+    .hero { padding: 24px 0 0; text-align: center; }
+    .hero h2 { justify-content: center; font-size: 20px; gap: 10px; } .hero h2 b { font-size: 72px; }
+    .facts { flex-direction: column; align-items: center; gap: 6px; font-size: 13px; }
+    .facts li { border: 0; padding: 0; }
+    .sec { margin-top: 32px; }
+    .latest span { font-size: 14px; }
+    .grid2 { grid-template-columns: 1fr; }
+    .row { grid-template-columns: 92px 1fr 30px; }
+    .latest li { grid-template-columns: 10px 1fr; } .latest small { grid-column: 2; }
     .bar input { flex-basis: 100%; }
     .bar button#reset { padding: 6px 14px; font-size: 13px; }
     /* Table becomes a stack of cards */
@@ -172,23 +224,64 @@
 
 <main>
 <div id="view-dash">
-<section class="stats" id="stats"></section>
-<section class="tl">
-  <div class="tl-top">
-    <h2>Incident timeline</h2>
-    <div class="tl-key">
-      <span><i style="background:var(--m-openai)"></i>OpenAI</span>
-      <span><i style="background:var(--m-anthropic)"></i>Anthropic</span>
-      <span><i style="background:var(--m-both)"></i>Both</span>
-      <span><i style="background:var(--m-chinese);border-radius:1px;transform:rotate(45deg) scale(.85)"></i>Chinese models</span>
-      <span><i style="background:var(--m-other)"></i>Other</span>
-    </div>
+<section class="hero">
+  <h2><b id="hero-n">—</b> <span id="hero-l">AI incidents on record</span></h2>
+  <ul class="facts" id="facts"></ul>
+</section>
+<section class="sec">
+  <div class="sec-head">
+    <h3>Timeline</h3>
     <div class="ranges" id="ranges">
       <button data-days="90">90 days</button><button data-days="365">12 months</button><button data-days="0">All time</button>
     </div>
   </div>
+  <div class="chips" id="chips">
+    <button data-company="">All</button><button data-company="OpenAI">OpenAI</button><button data-company="Anthropic">Anthropic</button><button data-company="Both">Both</button><button data-company="Chinese models">Chinese models</button><button data-unknown>Unknown model</button>
+  </div>
   <svg id="tl-svg" role="img" aria-label="Timeline of disclosed incidents up to today"></svg>
+  <div class="tl-key">
+    <span><i style="background:var(--m-openai)"></i>OpenAI</span>
+    <span><i style="background:var(--m-anthropic)"></i>Anthropic</span>
+    <span><i style="background:var(--m-both)"></i>Both</span>
+    <span><i style="background:var(--m-chinese);border-radius:1px;transform:rotate(45deg) scale(.85)"></i>Chinese models</span>
+    <span><i style="background:var(--m-other)"></i>Other</span>
+  </div>
   <div class="tl-foot" id="tl-foot"></div>
+</section>
+<div class="grid2">
+  <section class="sec">
+    <div class="sec-head"><h3>Who built the AI</h3></div>
+    <div class="rows" id="devs"></div>
+    <div class="note" id="devs-note"></div>
+  </section>
+  <section class="sec">
+    <div class="sec-head"><h3>Rogue agents vs human misuse</h3></div>
+    <svg id="mix-svg" role="img" aria-label="Incidents per month by type"></svg>
+    <div class="key2"><span><i style="background:#c0533f"></i>Agents acting on their own</span><span><i style="background:#4f7cc4"></i>Humans misusing AI</span></div>
+  </section>
+</div>
+<section class="sec">
+  <div class="sec-head"><h3>Where incidents happened</h3>
+    <div class="ramp" id="map-ramp">Fewer <i style="background:#f5d5cb"></i><i style="background:#eba596"></i><i style="background:#dc7a68"></i><i style="background:#c0533f"></i><i style="background:#8f3626"></i> More</div></div>
+  <svg id="map-svg" role="img" aria-label="World map of incidents by country"></svg>
+  <div class="note" id="map-note"></div>
+</section>
+<div class="grid2">
+  <section class="sec">
+    <div class="sec-head"><h3>Time to disclosure</h3></div>
+    <p class="big" id="lag-big">—</p>
+    <div class="note" id="lag-sub" style="margin:0 0 14px"></div>
+    <div class="rows" id="lag"></div>
+  </section>
+  <section class="sec">
+    <div class="sec-head"><h3>Transparency</h3></div>
+    <div id="transp"></div>
+  </section>
+</div>
+<section class="sec">
+  <div class="sec-head"><h3>Latest</h3></div>
+  <ul class="latest" id="latest"></ul>
+  <a class="more" href="#data">See all incidents →</a>
 </section>
 <div class="tip" id="tip" role="tooltip"></div>
 </div>
@@ -256,25 +349,230 @@ const parseDate = k => { const [m, d, y] = (k || "").trim().split("/").map(Numbe
 const fmtDate = d => `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 const today = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
 
+// The dashboard follows the company and "Unknown model" filters (not search or table selections)
+const dashMatch = r => (!filters.Company || companyGroup(r) === filters.Company) && (!unknownOnly || hasUnknownModel(r.Model));
+
 function renderStats() {
   const dates = data.map(r => parseDate(r["Disclosed on"])).filter(Boolean);
   const last = new Date(Math.max(...dates));
   const daysSince = Math.max(0, Math.round((today() - last) / DAY));
   const unintended = data.filter(r => /unintended/i.test(r.Category || "")).length;
   const sources = data.reduce((n, r) => n + r._sources.length, 0);
-  const tiles = [
-    [data.length, "incidents tracked"],
-    [daysSince, `day${daysSince === 1 ? "" : "s"} since the last incident`],
-    [`${Math.round(unintended / data.length * 100)}%`, "agents acting on their own (not human misuse)"],
-    [sources, "sources cited"],
-  ];
-  const el = document.getElementById("stats");
-  el.innerHTML = "";
-  for (const [v, l] of tiles) {
-    const d = document.createElement("div"); d.className = "stat";
-    d.innerHTML = "<b></b><span></span>";
-    d.firstChild.textContent = v; d.lastChild.textContent = l;
-    el.appendChild(d);
+  const pct = Math.round(unintended / data.length * 100);
+  const shown = data.filter(dashMatch).length;
+  document.getElementById("hero-n").textContent = shown;
+  const what = [unknownOnly ? "unknown-model" : "", filters.Company && filters.Company !== "Both" ? filters.Company : filters.Company === "Both" ? "OpenAI + Anthropic" : ""].filter(Boolean).join(" ");
+  document.getElementById("hero-l").textContent = `${what ? what + " " : "AI "}incident${shown === 1 ? "" : "s"} on record`;
+  const when = daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince} days ago`;
+  const facts = document.getElementById("facts");
+  facts.replaceChildren();
+  for (const [v, l] of [["Last disclosed", when], [`${pct}%`, "were agents acting on their own"], [sources, "sources cited"]]) {
+    const li = document.createElement("li"), bEl = document.createElement("b");
+    // "Last disclosed today" reads label-first; the others read number-first
+    if (v === "Last disclosed") { li.append(v + " "); bEl.textContent = l; li.append(bEl); }
+    else { bEl.textContent = v; li.append(bEl, " " + l); }
+    facts.appendChild(li);
+  }
+  renderLatest();
+  renderCharts();
+}
+
+// ---- Extra charts: developers, type mix, map, disclosure lag, transparency ----
+const DEVS = [[/openai/i, "OpenAI"], [/anthropic/i, "Anthropic"], [/\bxai\b/i, "xAI"], [/\bmeta\b/i, "Meta"],
+  [/deepseek/i, "DeepSeek"], [/google|deepmind/i, "Google DeepMind"], [/alibaba|qwen/i, "Alibaba"],
+  [/bytedance|doubao/i, "ByteDance"], [/minimax/i, "MiniMax"], [/moonshot|kimi/i, "Moonshot AI"], [/z\.ai|zhipu/i, "Z.ai"],
+  [/replit/i, "Replit"], [/nous research/i, "Nous Research"]];
+const CN_DEVS = new Set(["DeepSeek", "Alibaba", "ByteDance", "MiniMax", "Moonshot AI", "Z.ai"]);
+const devColor = d => d === "OpenAI" ? "var(--m-openai)" : d === "Anthropic" ? "var(--m-anthropic)" : CN_DEVS.has(d) ? "var(--m-chinese)" : "var(--m-other)";
+const devsOf = r => DEVS.filter(([re]) => re.test(r.Company || "")).map(([, n]) => n);
+
+function placeTip(tip, rect, topY) {
+  const w = document.documentElement.clientWidth;
+  const { width, height } = tip.getBoundingClientRect();
+  tip.style.left = Math.max(12, Math.min(rect.left + rect.width / 2 - width / 2, w - width - 12)) + "px";
+  tip.style.top = Math.max(12, topY - height - 8) + "px";
+  tip.style.opacity = 1;
+}
+
+function tipContent(tip, title, pairs) {
+  tip.replaceChildren();
+  const t = document.createElement("div"); t.className = "tip-title"; t.textContent = title; tip.appendChild(t);
+  if (pairs) {
+    const dl = document.createElement("dl");
+    for (const [k, v] of pairs) { const dt = document.createElement("dt"); dt.textContent = k; const dd = document.createElement("dd"); dd.textContent = v; dl.append(dt, dd); }
+    tip.appendChild(dl);
+  }
+  tip.style.maxWidth = "260px";
+}
+
+function barRows(el, items, max, onPick) {
+  el.replaceChildren();
+  for (const it of items) {
+    const row = document.createElement("div"); row.className = "row" + (onPick ? " pick" : ""); row.title = it.title || "";
+    const l = document.createElement("span"); l.className = "lbl"; l.textContent = it.label;
+    const t = document.createElement("div"); t.className = "trk";
+    const b = document.createElement("div"); b.className = "bar"; b.style.width = (it.n / max * 100) + "%"; b.style.background = it.color;
+    const n = document.createElement("span"); n.className = "num"; n.textContent = it.n;
+    t.appendChild(b); row.append(l, t, n);
+    if (onPick) row.onclick = () => onPick(it);
+    el.appendChild(row);
+  }
+}
+
+function renderDevs(rows) {
+  const counts = {}; let none = 0;
+  for (const r of rows) { const d = devsOf(r); if (!d.length) none++; for (const n of d) counts[n] = (counts[n] || 0) + 1; }
+  const items = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8)
+    .map(([label, n]) => ({ label, n, color: devColor(label), title: `${label}: ${n} incident${n === 1 ? "" : "s"} · click to see them` }));
+  barRows(document.getElementById("devs"), items, Math.max(1, ...items.map(i => i.n)), it => {
+    devFilter = it.label; selId = ""; selWeek = null; render(); location.hash = "data";
+  });
+  document.getElementById("devs-note").textContent = rows.length
+    ? `${none} of ${rows.length} incidents (${Math.round(none / rows.length * 100)}%) don't name the developer. An incident naming several developers counts for each.` : "";
+}
+
+function renderMix(rows) {
+  const svg = document.getElementById("mix-svg"), NS = "http://www.w3.org/2000/svg";
+  const W = svg.clientWidth || 480, H = 190, axis = 20, top = 14;
+  const end = today(), months = [];
+  for (let i = 11; i >= 0; i--) months.push(new Date(end.getFullYear(), end.getMonth() - i, 1));
+  const cols = months.map(m => ({ m, a: 0, h: 0 }));
+  for (const r of rows) {
+    const d = parseDate(r["Disclosed on"]); if (!d) continue;
+    const i = (d.getFullYear() - months[0].getFullYear()) * 12 + d.getMonth() - months[0].getMonth();
+    if (i < 0 || i > 11) continue;
+    if (/unintended/i.test(r.Category || "")) cols[i].a++; else if (/misuse/i.test(r.Category || "")) cols[i].h++;
+  }
+  const max = Math.max(1, ...cols.map(d => d.a + d.h));
+  const slot = W / 12, bw = Math.max(4, slot - 8), unit = (H - axis - top) / max, base = H - axis;
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("height", H); svg.innerHTML = "";
+  const add = (tag, at, p = svg) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); p.appendChild(e); return e; };
+  add("line", { x1: 0, x2: W, y1: base, y2: base, stroke: "#e4ddd1" });
+  const tip = document.getElementById("tip");
+  cols.forEach((d, i) => {
+    const x = i * slot + (slot - bw) / 2, g = add("g", {});
+    let y = base;
+    for (const [n, c] of [[d.a, "#c0533f"], [d.h, "#4f7cc4"]]) {   // 2px surface gap between stacked segments
+      if (!n) continue;
+      const h = n * unit;
+      add("rect", { x, y: y - h, width: bw, height: Math.max(1, h - 2), rx: 3, fill: c }, g);
+      y -= h;
+    }
+    add("rect", { x: i * slot, y: 0, width: slot, height: base, fill: "transparent" }, g);
+    if (i % (W < 420 ? 3 : 2) === 1 || i === 11) { const t = add("text", { x: x + bw / 2, y: H - 5, "text-anchor": "middle" }); t.textContent = MONTHS[d.m.getMonth()]; }
+    g.onmouseenter = () => {
+      const r = g.getBoundingClientRect();
+      tipContent(tip, `${MONTHS[d.m.getMonth()]} ${d.m.getFullYear()}: ${d.a + d.h} incident${d.a + d.h === 1 ? "" : "s"}`,
+        [["Agents on their own", d.a], ["Human misuse", d.h]]);
+      placeTip(tip, r, r.top + (y / H) * r.height);
+    };
+    g.onmouseleave = () => { tip.style.opacity = 0; };
+  });
+}
+
+// Map: reads the sheet's "Country" column (several countries separated by ";")
+const COUNTRY_ALIAS = { "united states": "United States of America", "usa": "United States of America", "us": "United States of America",
+  "u.s.": "United States of America", "uk": "United Kingdom", "great britain": "United Kingdom", "england": "United Kingdom",
+  "scotland": "United Kingdom", "wales": "United Kingdom", "korea": "South Korea", "republic of korea": "South Korea",
+  "czech republic": "Czechia", "ivory coast": "Côte d'Ivoire", "democratic republic of the congo": "Dem. Rep. Congo",
+  "dominican republic": "Dominican Rep.", "bosnia and herzegovina": "Bosnia and Herz.", "south sudan": "S. Sudan",
+  "north macedonia": "Macedonia", "viet nam": "Vietnam", "russian federation": "Russia" };
+const countriesOf = r => (r.Country || "").split(";").map(c => c.trim()).filter(Boolean)
+  .map(c => COUNTRY_ALIAS[c.toLowerCase()] || c);
+let worldP = null, countryFilter = "", devFilter = "";
+const RAMP = ["#f5d5cb", "#eba596", "#dc7a68", "#c0533f", "#8f3626"];
+const rampOf = n => RAMP[n >= 25 ? 4 : n >= 10 ? 3 : n >= 4 ? 2 : n >= 2 ? 1 : 0];
+
+async function renderMap(rows) {
+  const svg = document.getElementById("map-svg"), note = document.getElementById("map-note");
+  if (!window.d3 || !window.topojson) { setTimeout(() => renderMap(rows), 200); return; }
+  worldP ||= fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-110m.json").then(r => r.json());
+  let world;
+  try { world = await worldP; } catch { worldP = null; note.textContent = "The world map couldn't load."; return; }
+  const feats = topojson.feature(world, world.objects.countries).features.filter(f => f.properties.name !== "Antarctica");
+  const names = new Set(feats.map(f => f.properties.name));
+  const counts = {}, offMap = {}; let located = 0;
+  for (const r of rows) {
+    const cs = countriesOf(r); if (cs.length) located++;
+    for (const c of cs) { const bucket = names.has(c) ? counts : offMap; bucket[c] = (bucket[c] || 0) + 1; }
+  }
+  const W = svg.clientWidth || 900, H = Math.round(W * 0.47);
+  const proj = d3.geoNaturalEarth1().fitSize([W, H], { type: "FeatureCollection", features: feats });
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("height", H);
+  const tip = document.getElementById("tip");
+  d3.select(svg).selectAll("path").data(feats).join("path")
+    .attr("d", d3.geoPath(proj))
+    .attr("class", f => counts[f.properties.name] ? "has" : "")
+    .attr("fill", f => counts[f.properties.name] ? rampOf(counts[f.properties.name]) : "#e9e3d8")
+    .on("mouseenter", function (ev, f) {
+      const n = counts[f.properties.name] || 0, b = this.getBoundingClientRect();
+      tipContent(tip, `${f.properties.name}: ${n ? n + " incident" + (n === 1 ? "" : "s") : "none recorded"}`);
+      placeTip(tip, b, b.top);
+    })
+    .on("mouseleave", () => { tip.style.opacity = 0; })
+    .on("click", (ev, f) => {
+      if (!counts[f.properties.name]) return;
+      tip.style.opacity = 0; countryFilter = f.properties.name; selId = ""; selWeek = null; render(); location.hash = "data";
+    });
+  document.getElementById("map-ramp").style.visibility = located ? "visible" : "hidden";
+  if (!located) { note.textContent = "Location data isn't in the sheet yet. The map fills in automatically once the sheet's Country column is populated."; return; }
+  const extra = Object.entries(offMap).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join(", ");
+  note.textContent = `${located} of ${rows.length} incidents have a known location.` + (extra ? ` Also: ${extra}.` : "") + " Click a country to see its incidents.";
+}
+
+function renderLag(rows) {
+  const lags = rows.map(r => { const a = parseDate(r["Occurred on"]), b = parseDate(r["Disclosed on"]); return a && b && b >= a ? Math.round((b - a) / DAY) : null; })
+    .filter(v => v !== null).sort((a, b) => a - b);
+  const big = document.getElementById("lag-big"), sub = document.getElementById("lag-sub"), el = document.getElementById("lag");
+  if (!lags.length) { big.textContent = "—"; sub.textContent = "No incidents with a known occurrence date."; el.replaceChildren(); return; }
+  const mid = lags.length >> 1;
+  const med = lags.length % 2 ? lags[mid] : Math.round((lags[mid - 1] + lags[mid]) / 2);
+  big.textContent = `${med} day${med === 1 ? "" : "s"}`;
+  sub.textContent = `Median time from incident to public disclosure, across the ${lags.length} incidents with a known occurrence date.`;
+  const bins = [["Within a week", 0, 7], ["1–4 weeks", 8, 30], ["1–3 months", 31, 90], ["3–6 months", 91, 180], ["Over 6 months", 181, Infinity]];
+  const items = bins.map(([label, lo, hi]) => ({ label, n: lags.filter(v => v >= lo && v <= hi).length, color: "#8a837a" }));
+  barRows(el, items, Math.max(1, ...items.map(i => i.n)));
+}
+
+function renderTransparency(rows) {
+  const el = document.getElementById("transp"); el.replaceChildren();
+  const n = rows.length || 1;
+  for (const [label, k] of [
+    ["Name the developer", rows.filter(r => devsOf(r).length).length],
+    ["Name the AI model", rows.filter(r => !hasUnknownModel(r.Model)).length],
+    ["Link an official source", rows.filter(r => /^https?:\/\//.test((r["Official source URL"] || "").trim())).length],
+  ]) {
+    const m = document.createElement("div"); m.className = "meter";
+    const top = document.createElement("div"); top.className = "meter-top";
+    const l = document.createElement("span"); l.textContent = `${label} · ${k} of ${rows.length}`;
+    const v = document.createElement("b"); v.textContent = `${Math.round(k / n * 100)}%`;
+    top.append(l, v);
+    const trk = document.createElement("div"); trk.className = "meter-trk";
+    const f = document.createElement("div"); f.className = "meter-fill"; f.style.width = (k / n * 100) + "%";
+    trk.appendChild(f); m.append(top, trk); el.appendChild(m);
+  }
+}
+
+function renderCharts() {
+  const rows = data.filter(dashMatch);
+  renderDevs(rows); renderMix(rows); renderLag(rows); renderTransparency(rows); renderMap(rows);
+}
+
+function renderLatest() {
+  const list = document.getElementById("latest");
+  list.replaceChildren();
+  const recent = data.filter(dashMatch).map(r => ({ r, d: parseDate(r["Disclosed on"]) })).filter(x => x.d)
+    .sort((a, b) => b.d - a.d).slice(0, 5);
+  for (const { r, d } of recent) {
+    const li = document.createElement("li");
+    const dot = document.createElement("i"); dot.style.background = `var(--m-${groupClass(r)})`;
+    const t = document.createElement("span"); t.textContent = r["Event title"] || "Untitled incident";
+    const meta = document.createElement("small"); meta.textContent = `${companyGroup(r)} · ${fmtDate(d)}`;
+    li.append(dot, t, meta);
+    li.tabIndex = 0;
+    li.onclick = () => { selWeek = null; selId = r["Incident ID"]; render(); location.hash = "data"; };
+    li.onkeydown = e => { if (e.key === "Enter") li.onclick(); };
+    list.appendChild(li);
   }
 }
 
@@ -284,7 +582,7 @@ function renderTimeline() {
   const W = svg.clientWidth || 800, padL = 8, padR = 44, axisH = 22;
   const maxPlot = innerWidth < 700 ? 220 : 300;
   const end = today();
-  const all = data.map(r => ({ r, d: parseDate(r["Disclosed on"]) })).filter(x => x.d && x.d <= end);
+  const all = data.filter(dashMatch).map(r => ({ r, d: parseDate(r["Disclosed on"]) })).filter(x => x.d && x.d <= end);
   const first = new Date(Math.min(...all.map(x => x.d)));
   const start = rangeDays ? new Date(end - rangeDays * DAY) : new Date(first - 20 * DAY);
   const x = d => padL + (d - start) / (end - start) * (W - padL - padR);
@@ -322,7 +620,6 @@ function renderTimeline() {
   for (let t = new Date(start.getFullYear(), start.getMonth() + 1, 1); t <= end; t = new Date(t.getFullYear(), t.getMonth() + 1, 1)) {
     if ((t.getFullYear() * 12 + t.getMonth()) % every) continue;
     const tx = x(t);
-    add("line", { x1: tx, x2: tx, y1: 0, y2: axisY, stroke: "#f1ece3" });
     const lbl = add("text", { x: tx, y: H - 6, "text-anchor": "middle" });
     lbl.textContent = t.getMonth() === 0 || every >= 12 ? `${MONTHS[t.getMonth()]} ${t.getFullYear()}` : MONTHS[t.getMonth()];
   }
@@ -402,8 +699,8 @@ function renderTimeline() {
       opacity: visibleIds.has(m.r["Incident ID"]) ? 1 : 0.18 });
     if (grp === "chinese")   // diamond: shape as well as colour, so this group never relies on colour alone
       add("rect", { x: m.cx - R * 0.8, y: cy - R * 0.8, width: R * 1.6, height: R * 1.6, rx: 1, fill: `var(--m-${grp})`,
-                    stroke: "#fffdf9", "stroke-width": R > 4 ? 2 : 1, transform: `rotate(45 ${m.cx} ${cy})` }, g);
-    else add("circle", { cx: m.cx, cy, r: R, fill: `var(--m-${grp})`, stroke: "#fffdf9", "stroke-width": R > 4 ? 2 : 1 }, g);
+                    stroke: "#f7f4ee", "stroke-width": R > 4 ? 2 : 1, transform: `rotate(45 ${m.cx} ${cy})` }, g);
+    else add("circle", { cx: m.cx, cy, r: R, fill: `var(--m-${grp})`, stroke: "#f7f4ee", "stroke-width": R > 4 ? 2 : 1 }, g);
     if (m.r["Incident ID"] === selId) add("circle", { cx: m.cx, cy, r: R + 3, fill: "none", stroke: "#5a564f", "stroke-width": 1.5 }, g);
     add("circle", { cx: m.cx, cy, r: R + 5, fill: "transparent" }, g);   // larger hit target
     const showTip = () => {
@@ -462,7 +759,7 @@ function renderTimeline() {
   const earlier = all.length - inRange.length;
   document.getElementById("tl-foot").textContent =
     `${inRange.length} incident${inRange.length === 1 ? "" : "s"} in view` +
-    (earlier ? ` · ${earlier} earlier` : "") + (useBars ? " · one bar per week" : "") + " · hover for details, click to open";
+    (earlier ? ` · ${earlier} earlier` : "") + (useBars ? " · each bar is one week" : "");
 }
 
 document.querySelectorAll("#ranges button").forEach(b => b.onclick = () => { rangeDays = +b.dataset.days; renderTimeline(); });
@@ -480,7 +777,7 @@ function showView() {
 window.addEventListener("hashchange", showView);
 showView();
 let resizeT;
-window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => data.length && renderTimeline(), 150); });
+window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => { if (data.length) { renderTimeline(); renderCharts(); } }, 150); });
 window.addEventListener("scroll", () => { document.getElementById("tip").style.opacity = 0; }, { passive: true, capture: true });
 
 function render() {
@@ -488,6 +785,8 @@ function render() {
   let rows = data.filter(r => {
     if (unknownOnly && !hasUnknownModel(r.Model)) return false;
     if (selId && r["Incident ID"] !== selId) return false;
+    if (countryFilter && !countriesOf(r).includes(countryFilter)) return false;
+    if (devFilter && !devsOf(r).includes(devFilter)) return false;
     if (selWeek) { const d = parseDate(r["Disclosed on"]); if (!d || d < selWeek[0] || d >= selWeek[1]) return false; }
     if (q && !COLS.some(c => (r[c.key] || "").toLowerCase().includes(q))) return false;
     return COLS.every(c => {
@@ -537,12 +836,15 @@ function render() {
   if (sel) sel.value = filters.Company || "";
   const unknownButton = document.getElementById("unknown-model");
   unknownButton.classList.toggle("active", unknownOnly);
+  document.querySelectorAll("#chips button").forEach(c => c.classList.toggle("active",
+    "unknown" in c.dataset ? unknownOnly : c.dataset.company === (filters.Company || "")));
+  renderStats();
   unknownButton.setAttribute("aria-pressed", String(unknownOnly));
   document.getElementById("unknown-count").textContent = `(${data.filter(r => hasUnknownModel(r.Model)).length})`;
   document.querySelectorAll("#heads th").forEach((th, i) => {
     th.querySelector(".arrow").textContent = COLS[i].key === sortKey ? (sortDir > 0 ? " ▲" : " ▼") : "";
   });
-  document.getElementById("status").textContent = `Showing ${rows.length} of ${data.length} incidents${selId ? " (one selected on the timeline)" : selWeek ? ` (week of ${fmtDate(selWeek[0])})` : ""} · ${source}`;
+  document.getElementById("status").textContent = `Showing ${rows.length} of ${data.length} incidents${devFilter ? ` built by ${devFilter}` : ""}${countryFilter ? ` in ${countryFilter}` : ""}${selId ? " (one selected on the timeline)" : selWeek ? ` (week of ${fmtDate(selWeek[0])})` : ""} · ${source}`;
   visibleIds = new Set(rows.map(r => r["Incident ID"]));
   renderTimeline();
 }
@@ -573,6 +875,12 @@ function buildHeader() {
 
 document.getElementById("q").oninput = render;
 document.getElementById("unknown-model").onclick = () => { unknownOnly = !unknownOnly; render(); };
+document.querySelectorAll("#chips button").forEach(c => c.onclick = () => {
+  if ("unknown" in c.dataset) unknownOnly = !unknownOnly;
+  else filters.Company = c.dataset.company;
+  selId = ""; selWeek = null;
+  render();
+});
 document.querySelectorAll(".legend button").forEach(b => b.onclick = () => {
   filters.Company = filters.Company === b.dataset.company ? "" : b.dataset.company;
   render();
@@ -581,7 +889,7 @@ document.getElementById("reset").onclick = () => {
   document.getElementById("q").value = "";
   document.querySelectorAll("#filters input, #filters select").forEach(el => el.value = "");
   for (const k in filters) delete filters[k];
-  selId = ""; selWeek = null;
+  selId = ""; selWeek = null; countryFilter = ""; devFilter = "";
   unknownOnly = false;
   render();
 };

@@ -3,8 +3,9 @@ import csv, io, urllib.request
 
 BASE = "https://docs.google.com/spreadsheets/d/15tpVhsFph5AHnAuUsHFBY82zPciBDJzpfQzWKZ_cNP0/gviz/tq?tqx=out:csv&gid="
 TABS = {
-    "incidents": ("1500637786", ["Incident ID", "Event title", "Occurrence label", "Disclosed on", "Company",
-                                  "Model", "Category", "Incident summary", "Outcome", "Evidence"]),
+    "incidents": ("1500637786", ["Incident ID", "Event title", "Occurred on", "Occurrence label", "Disclosed on", "Company",
+                                  "Model", "Category", "Incident summary", "Outcome", "Evidence",
+                                  "Official source URL", "Country"]),
     "sources": ("1116836595", ["Incident ID", "Publisher", "Source title", "URL"]),
 }
 
