@@ -76,7 +76,10 @@
   .legend .chinese { background: var(--chinese-bg); color: var(--chinese-ink); border: 1px solid var(--chinese-bar); }
   .status { color: var(--muted); padding: 0 4px 12px; font-size: 12px; }
   #view-dash { max-width: 1080px; margin: 0 auto; }
-  .hero { padding: 40px 0 8px; }
+  .hero { padding: 40px 0 8px; display: flex; justify-content: space-between; align-items: flex-start; gap: 32px; }
+  .since { text-align: right; padding-top: 6px; }
+  .since b { display: block; font: 500 72px/0.9 Fraunces, Georgia, serif; color: #c0533f; letter-spacing: -0.02em; }
+  .since span { display: block; margin-top: 10px; font-size: 13px; color: var(--muted); max-width: 230px; margin-left: auto; }
   .hero h2 { margin: 0; display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
              font: 500 26px/1.1 Fraunces, Georgia, serif; color: #8a837a; }
   .hero h2 b { font: 500 96px/0.9 Fraunces, Georgia, serif; color: #4f4a44; letter-spacing: -0.03em; }
@@ -183,7 +186,8 @@
     .hal { flex-wrap: wrap; justify-content: center; }
     .hal { gap: 8px; } .hal q { font-size: 14px; } .eye { width: 16px; height: 16px; }
     main { padding: 0 16px 24px; }
-    .hero { padding: 24px 0 0; text-align: center; }
+    .hero { padding: 24px 0 0; text-align: center; flex-direction: column; align-items: center; gap: 22px; }
+    .since { text-align: center; padding: 0; } .since b { font-size: 56px; } .since span { margin: 8px auto 0; }
     .hero h2 { justify-content: center; font-size: 20px; gap: 10px; } .hero h2 b { font-size: 72px; }
     .facts { flex-direction: column; align-items: center; gap: 6px; font-size: 13px; }
     .facts li { border: 0; padding: 0; }
@@ -225,8 +229,11 @@
 <main>
 <div id="view-dash">
 <section class="hero">
-  <h2><b id="hero-n">—</b> <span id="hero-l">AI incidents on record</span></h2>
-  <ul class="facts" id="facts"></ul>
+  <div>
+    <h2><b id="hero-n">—</b> <span id="hero-l">AI incidents on record</span></h2>
+    <ul class="facts" id="facts"></ul>
+  </div>
+  <div class="since"><b id="since-n">—</b><span id="since-l">days since the last AI incident</span></div>
 </section>
 <section class="sec">
   <div class="sec-head">
@@ -363,14 +370,13 @@ function renderStats() {
   document.getElementById("hero-n").textContent = shown;
   const what = [unknownOnly ? "unknown-model" : "", filters.Company && filters.Company !== "Both" ? filters.Company : filters.Company === "Both" ? "OpenAI + Anthropic" : ""].filter(Boolean).join(" ");
   document.getElementById("hero-l").textContent = `${what ? what + " " : "AI "}incident${shown === 1 ? "" : "s"} on record`;
-  const when = daysSince === 0 ? "today" : daysSince === 1 ? "yesterday" : `${daysSince} days ago`;
   const facts = document.getElementById("facts");
   facts.replaceChildren();
-  for (const [v, l] of [["Last disclosed", when], [`${pct}%`, "were agents acting on their own"], [sources, "sources cited"]]) {
+  document.getElementById("since-n").textContent = daysSince;
+  document.getElementById("since-l").textContent = `day${daysSince === 1 ? "" : "s"} since the last AI incident`;
+  for (const [v, l] of [[`${pct}%`, "were agents acting on their own"], [sources, "sources cited"]]) {
     const li = document.createElement("li"), bEl = document.createElement("b");
-    // "Last disclosed today" reads label-first; the others read number-first
-    if (v === "Last disclosed") { li.append(v + " "); bEl.textContent = l; li.append(bEl); }
-    else { bEl.textContent = v; li.append(bEl, " " + l); }
+    bEl.textContent = v; li.append(bEl, " " + l);
     facts.appendChild(li);
   }
   renderLatest();
@@ -477,7 +483,10 @@ const COUNTRY_ALIAS = { "united states": "United States of America", "usa": "Uni
   "czech republic": "Czechia", "ivory coast": "Côte d'Ivoire", "democratic republic of the congo": "Dem. Rep. Congo",
   "dominican republic": "Dominican Rep.", "bosnia and herzegovina": "Bosnia and Herz.", "south sudan": "S. Sudan",
   "north macedonia": "Macedonia", "viet nam": "Vietnam", "russian federation": "Russia" };
-const countriesOf = r => (r.Country || "").split(";").map(c => c.trim()).filter(Boolean)
+// Reads the sheet's "Location" column (or "Country"). Several countries are separated by ";".
+// Qualifiers after a dash ("United States — reported") are dropped; "Unknown …" means no location.
+const countriesOf = r => (r.Location || r.Country || "").split(";")
+  .map(c => c.split(/\s+[—–-]\s+/)[0].trim()).filter(c => c && !/^unknown/i.test(c))
   .map(c => COUNTRY_ALIAS[c.toLowerCase()] || c);
 let worldP = null, countryFilter = "", devFilter = "";
 const RAMP = ["#f5d5cb", "#eba596", "#dc7a68", "#c0533f", "#8f3626"];
@@ -515,7 +524,7 @@ async function renderMap(rows) {
       tip.style.opacity = 0; countryFilter = f.properties.name; selId = ""; selWeek = null; render(); location.hash = "data";
     });
   document.getElementById("map-ramp").style.visibility = located ? "visible" : "hidden";
-  if (!located) { note.textContent = "Location data isn't in the sheet yet. The map fills in automatically once the sheet's Country column is populated."; return; }
+  if (!located) { note.textContent = "None of these incidents has a known location yet."; return; }
   const extra = Object.entries(offMap).sort((a, b) => b[1] - a[1]).map(([c, n]) => `${c} ${n}`).join(", ");
   note.textContent = `${located} of ${rows.length} incidents have a known location.` + (extra ? ` Also: ${extra}.` : "") + " Click a country to see its incidents.";
 }

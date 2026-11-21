@@ -5,7 +5,7 @@ BASE = "https://docs.google.com/spreadsheets/d/15tpVhsFph5AHnAuUsHFBY82zPciBDJzp
 TABS = {
     "incidents": ("1500637786", ["Incident ID", "Event title", "Occurred on", "Occurrence label", "Disclosed on", "Company",
                                   "Model", "Category", "Incident summary", "Outcome", "Evidence",
-                                  "Official source URL", "Country"]),
+                                  "Official source URL", "Location", "Country"]),
     "sources": ("1116836595", ["Incident ID", "Publisher", "Source title", "URL"]),
 }
 
