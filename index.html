@@ -49,6 +49,11 @@
   .hal q { font-family: Fraunces, Georgia, serif; font-style: italic; font-size: 16px; color: #6e6860; }
   .hal small { color: var(--muted); font-size: 12px; }
   main { max-width: 1600px; margin: 0 auto; padding: 0 24px 40px; }
+  .tabs { justify-self: end; display: flex; gap: 4px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+  .tabs a { padding: 6px 16px; border-radius: 999px; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; transition: background .2s, color .2s; }
+  .tabs a:hover { color: var(--fg); }
+  .tabs a.active { background: var(--head); color: var(--fg); }
+  [hidden] { display: none !important; }
   .bar { padding: 16px 0 10px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
   .bar input { flex: 1 1 260px; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px;
                background: var(--card); color: var(--fg); font: inherit; outline: none; transition: border-color .2s, box-shadow .2s; }
@@ -128,6 +133,7 @@
   @media (max-width: 700px) {
     header { grid-template-columns: 1fr; justify-items: center; padding: 18px 16px 4px; gap: 6px; text-align: center; }
     header h1 { font-size: 24px; justify-self: center; }
+    .tabs { justify-self: center; margin-top: 4px; }
     .hal { flex-wrap: wrap; justify-content: center; }
     .hal { gap: 8px; } .hal q { font-size: 14px; } .eye { width: 16px; height: 16px; }
     main { padding: 0 16px 24px; }
@@ -161,9 +167,11 @@
 </style>
 </head>
 <body>
-<header><h1>Rogue <b>.</b> AI</h1><div class="hal" title="HAL 9000, 2001: A Space Odyssey (1968)"><i class="eye"></i><q>I'm sorry, Dave. I'm afraid I can't do that.</q><small>— HAL 9000</small></div></header>
+<header><h1>Rogue <b>.</b> AI</h1><div class="hal" title="HAL 9000, 2001: A Space Odyssey (1968)"><i class="eye"></i><q>I'm sorry, Dave. I'm afraid I can't do that.</q><small>— HAL 9000</small></div>
+<nav class="tabs"><a href="#" data-view="dash">Dashboard</a><a href="#data" data-view="data">Data</a></nav></header>
 
 <main>
+<div id="view-dash">
 <section class="stats" id="stats"></section>
 <section class="tl">
   <div class="tl-top">
@@ -183,6 +191,8 @@
   <div class="tl-foot" id="tl-foot"></div>
 </section>
 <div class="tip" id="tip" role="tooltip"></div>
+</div>
+<div id="view-data" hidden>
 <div class="bar">
   <input id="q" type="search" placeholder="Search incidents…">
   <button id="reset">Clear filters</button>
@@ -201,6 +211,7 @@
     <thead><tr id="heads"></tr><tr class="filters" id="filters"></tr></thead>
     <tbody id="rows"></tbody>
   </table>
+</div>
 </div>
 </main>
 
@@ -240,7 +251,7 @@ const filters = {};
 // ---- Headline numbers + timeline of disclosure dates ----
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const DAY = 864e5;
-let selId = "", rangeDays = 365, visibleIds = new Set();
+let selId = "", selWeek = null, rangeDays = 365, visibleIds = new Set();
 const parseDate = k => { const [m, d, y] = (k || "").trim().split("/").map(Number); return y ? new Date(y, m - 1, d) : null; };
 const fmtDate = d => `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 const today = () => { const t = new Date(); return new Date(t.getFullYear(), t.getMonth(), t.getDate()); };
@@ -270,7 +281,8 @@ function renderStats() {
 function renderTimeline() {
   document.getElementById("tip").style.opacity = 0;
   const svg = document.getElementById("tl-svg"), NS = "http://www.w3.org/2000/svg";
-  const W = svg.clientWidth || 800, padL = 8, padR = 44, R = 6, STEP = 15, axisH = 22;
+  const W = svg.clientWidth || 800, padL = 8, padR = 44, axisH = 22;
+  const maxPlot = innerWidth < 700 ? 220 : 300;
   const end = today();
   const all = data.map(r => ({ r, d: parseDate(r["Disclosed on"]) })).filter(x => x.d && x.d <= end);
   const first = new Date(Math.min(...all.map(x => x.d)));
@@ -278,40 +290,111 @@ function renderTimeline() {
   const x = d => padL + (d - start) / (end - start) * (W - padL - padR);
   const inRange = all.filter(x0 => x0.d >= start).sort((a, b) => a.d - b.d);
 
-  // Stack markers that would overlap, like a dot plot
-  const levels = [];
-  for (const m of inRange) {
-    m.cx = x(m.d);
-    let lv = 0;
-    while (levels[lv] !== undefined && m.cx - levels[lv] < R * 2 + 3) lv++;
-    levels[lv] = m.cx; m.lv = lv;
+  // Stack markers that would overlap, like a dot plot. Shrink the dots when the
+  // busiest column would exceed the max height, so the chart stays compact.
+  let R, STEP, levels;
+  for (R = 6; ; R -= 0.5) {
+    STEP = R * 2 + (R > 4 ? 3 : 1.5);
+    levels = [];
+    for (const m of inRange) {
+      m.cx = x(m.d);
+      let lv = 0;
+      while (levels[lv] !== undefined && m.cx - levels[lv] < R * 2 + 1.5) lv++;
+      levels[lv] = m.cx; m.lv = lv;
+    }
+    if ((levels.length + 1) * STEP <= maxPlot || R <= 4) break;   // below r=4 dots get too small to read or hover
   }
-  const plotH = Math.max(3, levels.length + 1) * STEP;
+  // Too dense for one dot per incident even at the smallest size: switch to weekly stacked bars
+  const useBars = (levels.length + 1) * STEP > maxPlot;
+  const plotH = useBars ? maxPlot : Math.max(3, levels.length + 1) * STEP;
   const H = plotH + axisH;
   const base = plotH - STEP / 2 - 2;
+  const axisY = useBars ? plotH - 1 : base + R + 4;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`); svg.setAttribute("height", H);
   svg.innerHTML = "";
   const add = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
 
   // Axis: baseline, month ticks spaced so labels never collide
-  add("line", { x1: padL, x2: W - padR, y1: base + R + 4, y2: base + R + 4, stroke: "#e4ddd1" });
+  add("line", { x1: padL, x2: W - padR, y1: axisY, y2: axisY, stroke: "#e4ddd1" });
   const spanMonths = (end - start) / (30.4 * DAY);
   const pxPerMonth = (W - padL - padR) / spanMonths;
   const every = [1, 2, 3, 6, 12].find(k => k * pxPerMonth >= 56) || 12;
   for (let t = new Date(start.getFullYear(), start.getMonth() + 1, 1); t <= end; t = new Date(t.getFullYear(), t.getMonth() + 1, 1)) {
     if ((t.getFullYear() * 12 + t.getMonth()) % every) continue;
     const tx = x(t);
-    add("line", { x1: tx, x2: tx, y1: 0, y2: base + R + 4, stroke: "#f1ece3" });
+    add("line", { x1: tx, x2: tx, y1: 0, y2: axisY, stroke: "#f1ece3" });
     const lbl = add("text", { x: tx, y: H - 6, "text-anchor": "middle" });
     lbl.textContent = t.getMonth() === 0 || every >= 12 ? `${MONTHS[t.getMonth()]} ${t.getFullYear()}` : MONTHS[t.getMonth()];
   }
   // Today marker at the right edge: the axis stops here, no empty future
   const tx = x(end);
-  add("line", { x1: tx, x2: tx, y1: 0, y2: base + R + 4, stroke: "#c9bfb0", "stroke-dasharray": "3 3" });
+  add("line", { x1: tx, x2: tx, y1: 0, y2: axisY, stroke: "#c9bfb0", "stroke-dasharray": "3 3" });
   const tl = add("text", { x: tx + 4, y: H - 6 }); tl.textContent = "Today";
 
   const tip = document.getElementById("tip");
-  for (const m of inRange) {
+  const ORDER = ["openai", "anthropic", "both", "chinese", "other"];
+  const NAMES = { openai: "OpenAI", anthropic: "Anthropic", both: "Both", chinese: "Chinese models", other: "Other" };
+  function drawBars() {
+    // One bar per week (weeks start on Sunday), stacked by company in a fixed order
+    const wk0 = d => { const w = new Date(d); w.setDate(w.getDate() - w.getDay()); return w; };
+    const buckets = new Map();
+    for (const m of inRange) {
+      const k = +wk0(m.d);
+      if (!buckets.has(k)) buckets.set(k, { start: new Date(k), n: 0, shown: 0, by: {} });
+      const b = buckets.get(k), g = groupClass(m.r);
+      b.n++; b.by[g] = (b.by[g] || 0) + 1;
+      if (visibleIds.has(m.r["Incident ID"])) b.shown++;
+    }
+    const maxN = Math.max(...[...buckets.values()].map(b => b.n));
+    const unit = (plotH - 18) / maxN;
+    const bw = Math.max(2, (x(new Date(+start + 7 * DAY)) - x(start)) - 2);
+    for (const b of buckets.values()) {
+      const bx = Math.max(padL, x(b.start)), sel = selWeek && +selWeek[0] === +b.start;
+      const g = add("g", { class: "dot", tabindex: 0, role: "button", opacity: b.shown || !visibleIds.size ? 1 : 0.18 });
+      let y = axisY;
+      for (const grp of ORDER) {
+        const n = b.by[grp]; if (!n) continue;
+        const h = n * unit;
+        add("rect", { x: bx, y: y - h, width: bw, height: Math.max(h - 1, 1), rx: Math.min(2, bw / 3), fill: `var(--m-${grp})` }, g);
+        y -= h;
+      }
+      if (sel) add("rect", { x: bx - 2, y: y - 2, width: bw + 4, height: axisY - y + 2, fill: "none", stroke: "#5a564f", "stroke-width": 1.5, rx: 3 }, g);
+      add("rect", { x: bx - 2, y: 0, width: bw + 4, height: axisY, fill: "transparent" }, g);   // full-height hit target
+      const endWk = new Date(+b.start + 7 * DAY);
+      const label = `Week of ${fmtDate(b.start)}: ${b.n} incident${b.n === 1 ? "" : "s"}`;
+      g.setAttribute("aria-label", label);
+      const showTip = () => {
+        const r = g.getBoundingClientRect();
+        tip.replaceChildren();
+        const t = document.createElement("div"); t.className = "tip-title"; t.textContent = label; tip.appendChild(t);
+        const dl = document.createElement("dl");
+        for (const grp of ORDER) if (b.by[grp]) {
+          const dt = document.createElement("dt"); dt.textContent = NAMES[grp];
+          const dd = document.createElement("dd"); dd.textContent = b.by[grp];
+          dl.append(dt, dd);
+        }
+        tip.appendChild(dl);
+        const h = document.createElement("div"); h.className = "tip-hint"; h.textContent = "Click to see this week's incidents."; tip.appendChild(h);
+        const w = document.documentElement.clientWidth;
+        tip.style.maxWidth = Math.min(300, w - 24) + "px";
+        const { width, height } = tip.getBoundingClientRect();
+        tip.style.left = Math.max(12, Math.min(r.left + r.width / 2 - width / 2, w - width - 12)) + "px";
+        tip.style.top = Math.max(12, r.top + (y / axisY) * r.height - height - 8) + "px";   // just above the bar top
+        tip.style.opacity = 1;
+      };
+      g.onmouseenter = showTip; g.onfocus = showTip;
+      g.onmouseleave = g.onblur = () => { tip.style.opacity = 0; };
+      g.onclick = () => {
+        tip.style.opacity = 0; selId = "";
+        selWeek = sel ? null : [b.start, endWk];
+        render();
+        if (selWeek) location.hash = "data";
+      };
+      g.onkeydown = e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); g.onclick(); } };
+    }
+  }
+  if (useBars) drawBars();
+  else for (const m of inRange) {
     const grp = groupClass(m.r);
     const cy = base - m.lv * STEP;
     const label = `${m.r["Event title"]} · ${fmtDate(m.d)} · ${companyGroup(m.r)}`;
@@ -319,8 +402,8 @@ function renderTimeline() {
       opacity: visibleIds.has(m.r["Incident ID"]) ? 1 : 0.18 });
     if (grp === "chinese")   // diamond: shape as well as colour, so this group never relies on colour alone
       add("rect", { x: m.cx - R * 0.8, y: cy - R * 0.8, width: R * 1.6, height: R * 1.6, rx: 1, fill: `var(--m-${grp})`,
-                    stroke: "#fffdf9", "stroke-width": 2, transform: `rotate(45 ${m.cx} ${cy})` }, g);
-    else add("circle", { cx: m.cx, cy, r: R, fill: `var(--m-${grp})`, stroke: "#fffdf9", "stroke-width": 2 }, g);
+                    stroke: "#fffdf9", "stroke-width": R > 4 ? 2 : 1, transform: `rotate(45 ${m.cx} ${cy})` }, g);
+    else add("circle", { cx: m.cx, cy, r: R, fill: `var(--m-${grp})`, stroke: "#fffdf9", "stroke-width": R > 4 ? 2 : 1 }, g);
     if (m.r["Incident ID"] === selId) add("circle", { cx: m.cx, cy, r: R + 3, fill: "none", stroke: "#5a564f", "stroke-width": 1.5 }, g);
     add("circle", { cx: m.cx, cy, r: R + 5, fill: "transparent" }, g);   // larger hit target
     const showTip = () => {
@@ -365,9 +448,10 @@ function renderTimeline() {
     g.onblur = () => { tip.style.opacity = 0; };
     g.onclick = () => {
       tip.style.opacity = 0;
+      selWeek = null;
       selId = selId === m.r["Incident ID"] ? "" : m.r["Incident ID"];
       render();
-      if (selId) document.querySelector(".wrap").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (selId) location.hash = "data";
     };
     g.onkeydown = event => {
       if (event.key === "Escape") tip.style.opacity = 0;
@@ -378,10 +462,23 @@ function renderTimeline() {
   const earlier = all.length - inRange.length;
   document.getElementById("tl-foot").textContent =
     `${inRange.length} incident${inRange.length === 1 ? "" : "s"} in view` +
-    (earlier ? ` · ${earlier} earlier (see All time)` : "") + " · hover for details, click to open in the table";
+    (earlier ? ` · ${earlier} earlier` : "") + (useBars ? " · one bar per week" : "") + " · hover for details, click to open";
 }
 
 document.querySelectorAll("#ranges button").forEach(b => b.onclick = () => { rangeDays = +b.dataset.days; renderTimeline(); });
+
+// Two views: the dashboard (home) and the data table (#data)
+function showView() {
+  const view = location.hash === "#data" ? "data" : "dash";
+  document.getElementById("view-dash").hidden = view !== "dash";
+  document.getElementById("view-data").hidden = view !== "data";
+  document.querySelectorAll(".tabs a").forEach(a => a.classList.toggle("active", a.dataset.view === view));
+  document.getElementById("tip").style.opacity = 0;
+  if (view === "dash" && data.length) renderTimeline();   // re-measure width after being hidden
+  scrollTo(0, 0);
+}
+window.addEventListener("hashchange", showView);
+showView();
 let resizeT;
 window.addEventListener("resize", () => { clearTimeout(resizeT); resizeT = setTimeout(() => data.length && renderTimeline(), 150); });
 window.addEventListener("scroll", () => { document.getElementById("tip").style.opacity = 0; }, { passive: true, capture: true });
@@ -391,6 +488,7 @@ function render() {
   let rows = data.filter(r => {
     if (unknownOnly && !hasUnknownModel(r.Model)) return false;
     if (selId && r["Incident ID"] !== selId) return false;
+    if (selWeek) { const d = parseDate(r["Disclosed on"]); if (!d || d < selWeek[0] || d >= selWeek[1]) return false; }
     if (q && !COLS.some(c => (r[c.key] || "").toLowerCase().includes(q))) return false;
     return COLS.every(c => {
       const f = filters[c.key];
@@ -444,7 +542,7 @@ function render() {
   document.querySelectorAll("#heads th").forEach((th, i) => {
     th.querySelector(".arrow").textContent = COLS[i].key === sortKey ? (sortDir > 0 ? " ▲" : " ▼") : "";
   });
-  document.getElementById("status").textContent = `Showing ${rows.length} of ${data.length} incidents${selId ? " (one selected on the timeline)" : ""} · ${source}`;
+  document.getElementById("status").textContent = `Showing ${rows.length} of ${data.length} incidents${selId ? " (one selected on the timeline)" : selWeek ? ` (week of ${fmtDate(selWeek[0])})` : ""} · ${source}`;
   visibleIds = new Set(rows.map(r => r["Incident ID"]));
   renderTimeline();
 }
@@ -483,7 +581,7 @@ document.getElementById("reset").onclick = () => {
   document.getElementById("q").value = "";
   document.querySelectorAll("#filters input, #filters select").forEach(el => el.value = "");
   for (const k in filters) delete filters[k];
-  selId = "";
+  selId = ""; selWeek = null;
   unknownOnly = false;
   render();
 };
