@@ -314,7 +314,7 @@
 <body>
 <div class="halo" aria-hidden="true"><i></i><i></i><i></i></div>
 <header><h1>Rogue <b>.</b> AI</h1><div class="hal" title="HAL 9000, 2001: A Space Odyssey (1968)"><i class="eye"></i><q>I'm sorry, Dave. I'm afraid I can't do that.</q><small>— HAL 9000</small></div>
-<nav class="tabs"><a href="#" data-view="dash">Dashboard</a><a href="#evidence" data-view="evid">Evidence</a><a href="#data" data-view="data">Data</a></nav></header>
+<nav class="tabs"><a href="#" data-view="dash">Dashboard</a><!-- Evidence tab hidden temporarily; restore: <a href="#evidence" data-view="evid">Evidence</a> --><a href="#data" data-view="data">Data</a></nav></header>
 
 <main>
 <div id="view-dash">
@@ -1223,7 +1223,8 @@ document.querySelectorAll("#ranges button").forEach(b => b.onclick = () => { ran
 
 // Two views: the dashboard (home) and the data table (#data)
 function showView() {
-  const view = location.hash === "#data" ? "data" : location.hash === "#evidence" ? "evid" : "dash";
+  const EVIDENCE_ON = false; // Evidence tab hidden temporarily; set true and restore the nav link to bring it back
+  const view = location.hash === "#data" ? "data" : (EVIDENCE_ON && location.hash === "#evidence") ? "evid" : "dash";
   document.getElementById("view-dash").hidden = view !== "dash";
   document.getElementById("view-evid").hidden = view !== "evid";
   document.getElementById("view-data").hidden = view !== "data";
