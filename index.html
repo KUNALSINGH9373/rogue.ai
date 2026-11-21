@@ -427,9 +427,9 @@
   </div>
   <div id="ev-after" hidden>
     <div class="grid2 inner">
-      <div><p class="big" id="ev-gap">—</p><div class="note" style="margin:0 0 14px">of incidents have no documented response</div>
+      <div><p class="big" id="ev-gap">—</p><div class="note" style="margin:0 0 14px">of incidents have no documented response.<br><span id="ev-legal"></span></div>
         <div class="mini-h">Response status</div><div class="rows" id="ev-status"></div></div>
-      <div><div class="mini-h">Type of response</div><div class="rows" id="ev-resp"></div></div>
+      <div><div class="mini-h">Type of response</div><div class="rows wide" id="ev-resp"></div></div>
     </div>
   </div>
 </section>
@@ -907,6 +907,10 @@ function renderEvidence() {
   af.hidden = !hasAfter(); pend.hidden = hasAfter();
   if (hasAfter()) {
     document.getElementById("ev-gap").textContent = `${pct(noResp)}%`;
+    const legal = data.filter(r => responsesOf(r).some(t => /lawsuit|regulatory/i.test(t))).length;
+    const resolved = data.filter(r => (r["Response status"] || "").trim() === "Resolved").length;
+    document.getElementById("ev-legal").textContent =
+      `${legal} (${pct(legal)}%) led to a lawsuit or regulatory action; ${resolved} (${pct(resolved)}%) are documented as resolved.`;
     const types = {};
     for (const r of data) for (const t of responsesOf(r)) if (!/none/i.test(t)) types[t] = (types[t] || 0) + 1;
     const tItems = Object.entries(types).sort((a, b) => b[1] - a[1]).map(([label, k]) => ({ label, n: k, color: "#c0533f" }));
