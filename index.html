@@ -852,7 +852,9 @@ function renderEvidence() {
   const single = data.filter(r => originsOf(r).size === 1).length;
   const srcCounts = data.map(r => r._sources.length).sort((a, b) => a - b);
   const medianSrc = srcCounts[srcCounts.length >> 1] || 0;
-  const noResp = hasAfter() ? data.filter(r => { const t = responsesOf(r); return !t.length || t.every(v => /none/i.test(v)); }).length : null;
+  // Follow-up stats only cover incidents whose follow-up has been researched (Response type filled in)
+  const researched = data.filter(r => responsesOf(r).length), nr = researched.length || 1, rpct = k => Math.round(k / nr * 100);
+  const noResp = hasAfter() ? researched.filter(r => responsesOf(r).every(v => /none/i.test(v))).length : null;
 
   // KPI row
   const kp = document.getElementById("ev-kpis"); kp.replaceChildren();
@@ -860,7 +862,7 @@ function renderEvidence() {
     ["Officially confirmed", `${pct(official)}%`, `${official} incidents backed by a government record or the company itself`],
     ["Single origin", `${pct(single)}%`, `${single} incidents trace back to one original investigation`],
     ["Sources per incident", medianSrc, "median number of sources linked"],
-    ["No documented response", noResp === null ? "—" : `${pct(noResp)}%`, noResp === null ? "being researched" : `${noResp} incidents with no follow-up on record`],
+    ["No documented response", noResp === null ? "—" : `${rpct(noResp)}%`, noResp === null ? "being researched" : `${noResp} of ${researched.length} researched incidents${researched.length < n ? ` (${n - researched.length} not yet researched)` : ""}`],
   ]) {
     const d = document.createElement("div"); d.className = "kpi";
     d.innerHTML = '<span class="kpi-l"></span><b class="kpi-n"></b><span class="kpi-d note-d"></span>';
@@ -906,17 +908,17 @@ function renderEvidence() {
   const af = document.getElementById("ev-after"), pend = document.getElementById("ev-after-pending");
   af.hidden = !hasAfter(); pend.hidden = hasAfter();
   if (hasAfter()) {
-    document.getElementById("ev-gap").textContent = `${pct(noResp)}%`;
-    const legal = data.filter(r => responsesOf(r).some(t => /lawsuit|regulatory/i.test(t))).length;
-    const resolved = data.filter(r => (r["Response status"] || "").trim() === "Resolved").length;
+    document.getElementById("ev-gap").textContent = `${rpct(noResp)}%`;
+    const legal = researched.filter(r => responsesOf(r).some(t => /lawsuit|regulatory/i.test(t))).length;
+    const resolved = researched.filter(r => (r["Response status"] || "").trim() === "Resolved").length;
     document.getElementById("ev-legal").textContent =
-      `${legal} (${pct(legal)}%) led to a lawsuit or regulatory action; ${resolved} (${pct(resolved)}%) are documented as resolved.`;
+      `Of ${researched.length} incidents with researched follow-up, ${legal} (${rpct(legal)}%) led to a lawsuit or regulatory action and ${resolved} (${rpct(resolved)}%) are documented as resolved.`;
     const types = {};
     for (const r of data) for (const t of responsesOf(r)) if (!/none/i.test(t)) types[t] = (types[t] || 0) + 1;
     const tItems = Object.entries(types).sort((a, b) => b[1] - a[1]).map(([label, k]) => ({ label, n: k, color: "#c0533f" }));
     barRows(document.getElementById("ev-resp"), tItems, Math.max(1, ...tItems.map(i => i.n)));
     const st = {};
-    for (const r of data) { const v = (r["Response status"] || "").trim() || "Unknown"; st[v] = (st[v] || 0) + 1; }
+    for (const r of researched) { const v = (r["Response status"] || "").trim() || "Unknown"; st[v] = (st[v] || 0) + 1; }
     const sItems = ["Ongoing", "Resolved", "Unknown"].filter(k => st[k]).map(k => ({ label: k, n: st[k], color: k === "Resolved" ? "#5f8f7a" : k === "Ongoing" ? "#d08a5a" : "#cfc4b7" }));
     barRows(document.getElementById("ev-status"), sItems, Math.max(1, ...sItems.map(i => i.n)));
   }

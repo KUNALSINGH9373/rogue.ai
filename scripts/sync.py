@@ -6,7 +6,7 @@ TABS = {
     "incidents": ("1500637786", ["Incident ID", "Event title", "Occurred on", "Occurrence label", "Disclosed on", "Company",
                                   "Model", "Category", "Incident summary", "Outcome", "Evidence",
                                   "Official source URL", "Location", "Country",
-                                  "Response type", "Response status", "Follow-up date", "Follow-up source"]),
+                                  "Response type", "Response status", "Follow-up date", "Follow-up source", "Other trackers"]),
     "sources": ("1116836595", ["Incident ID", "Publisher", "Source title", "URL", "Published on", "Claim supported",
                                "Source role", "Evidence origin"]),
 }
